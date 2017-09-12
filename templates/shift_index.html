@@ -1,10 +1,38 @@
+{% load static %}
+
 <html>
     <head>
-
+        <title>
+            Shift Manager
+        </title>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
     </head>
     <body>
-        <h1>
-            Shifts!
-        </h1>
+        {% if creating_shifts %}
+            <h2>You are creating some shifts! :)</h2>
+        {% else %}
+            {% if user.is_superuser%}
+                <div id='description'>
+                    <h2>Hey, {{user.first_name}}. </h2>
+                    <h4>Lets make some shifts.</h4>
+                    <p>
+                        What does this do?
+
+                        This assigns every user <em>you</em> select a number, 1-n. Where n is
+                        the amount of users selected. It then goes forward 1 to n and lets the user
+                        choose their shift. Once n is hit, n goes again and we loop back towards 1. 
+                        Vice versa.
+                    </p>
+                </div>
+                <div id='shift-form'>
+                    {% for x in user_list %}
+                        <input type='checkbox' name='{{x.username}}'> ({{x.first_name}} {{x.last_name}})
+                    {% endfor %}
+                    <input name='create_shifts' type='submit'>
+                </div>
+            {% else %}
+                <h2>Uhh.. nothing to see here.</h2>
+            {% endif %}
+        {% endif %}
     </body>
 </html>
