@@ -25,10 +25,13 @@
                     </p>
                 </div>
                 <div id='shift-form'>
-                    {% for x in user_list %}
-                        <input type='checkbox' name='{{x.username}}'> ({{x.first_name}} {{x.last_name}})
-                    {% endfor %}
-                    <input name='create_shifts' type='submit'>
+                    <form id='names_form' action='' method='POST'>
+                        {% csrf_token %}
+                        {% for x in user_list %}
+                            <input type='checkbox' name='{{x.username}}'> ({{x.first_name}} {{x.last_name}})
+                        {% endfor %}
+                        <input id='send_names' name='create_shifts' type='submit'>
+                    </form>
                 </div>
             {% else %}
                 <h2>Uhh.. nothing to see here.</h2>
