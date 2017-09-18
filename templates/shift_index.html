@@ -1,40 +1,44 @@
 {% load static %}
-
 <html>
     <head>
         <title>
             Shift Manager
         </title>
         <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+        <script type="text/javascript" src="{% static 'js/send_users.js' %}"></script>
     </head>
     <body>
         {% if creating_shifts %}
-            <h2>You are creating some shifts! :)</h2>
+            <a href='/shifts/create/'> Go here! We're choosing shifts. </a>
         {% else %}
             {% if user.is_superuser%}
                 <div id='description'>
-                    <h2>Hey, {{user.first_name}}. </h2>
                     <h4>Lets make some shifts.</h4>
                     <p>
                         What does this do?
-
+                        <br>
                         This assigns every user <em>you</em> select a number, 1-n. Where n is
                         the amount of users selected. It then goes forward 1 to n and lets the user
                         choose their shift. Once n is hit, n goes again and we loop back towards 1. 
                         Vice versa.
                     </p>
+                    {% if no_users %}
+                        <h4 style='color: red;'>No users selected.</h4>
+                    {% endif %}
                 </div>
                 <div id='shift-form'>
-                    <form id='names_form' action='' method='POST'>
+                    <form id='names_form' action='.' method='POST'>
                         {% csrf_token %}
+                        <ul>
                         {% for x in user_list %}
-                            <input type='checkbox' name='{{x.username}}'> ({{x.first_name}} {{x.last_name}})
+                            <li><input type='checkbox' name='{{x.username}}'> {{x.first_name}} {{x.last_name}}</li>
                         {% endfor %}
+                        </ul>
                         <input id='send_names' name='create_shifts' type='submit'>
                     </form>
                 </div>
             {% else %}
-                <h2>Uhh.. nothing to see here.</h2>
+                <h2>Nothing going on here right now!</h2>
             {% endif %}
         {% endif %}
     </body>

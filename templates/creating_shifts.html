@@ -1,0 +1,19 @@
+{% load static %}
+
+<html>
+<head>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.js'></script>
+	<link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.css'>
+	<link media='print' rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.print.css'>
+	<script type="text/javascript" src="{% static 'js/create_shift.js' %}"></script>
+</head>	
+<body>
+	<form action='.' method="POST">
+		{% csrf_token %}
+		<input type='submit'>
+	</form>
+	<div id='calendar'></div>
+</body>
+</html>
