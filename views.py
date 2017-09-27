@@ -16,7 +16,6 @@ def index(request):
     if not context['creating_shifts']:
         if request.method == 'POST' and request.POST.get('create_shifts', False) and request.user.is_superuser:
             num_of_users = len([x for x in request.POST.keys() if request.POST.get(x, False) == 'on'])
-
             if num_of_users == 0:
                 context['no_users'] = True
                 return render(
@@ -40,7 +39,9 @@ def index(request):
                         settings_obj[0].save()
                     except IntegrityError:
                         pass
+            settings.NUM_USERS = num_of_users
             settings.CREATING_SHIFTS = True
+            settings.USER_SHIFT_PLACE = 0
             return redirect('/shifts/create/')
     
     if settings.CREATING_SHIFTS:
