@@ -7,9 +7,14 @@
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.js'></script>
 	<link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.min.css'>
 	<link media='print' rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.5.1/fullcalendar.print.css'>
+	<link rel='stylesheet' type='text/css' href='{% static "css/creating_shifts.css" %}'>
 	<script type="text/javascript" src="{% static 'js/create_shift.js' %}"></script>
+	<script>
+		csrf_token = "{{csrf_token}}"
+	</script>
 </head>	
 <body>
+<<<<<<< HEAD
 	{% if creating_shifts %}
 		<form action='.' method="POST">
 			{% csrf_token %}
@@ -21,5 +26,17 @@
 			Nothing here right now, come back when we're creating shifts.
 		</h2>
 	{% endif %}
+=======
+	<div id='header_block'>
+		<span id='place'>{{starting_place}}</span>
+		<br>
+		<span id='header'>It is <span id='first'>{{current_user.first_name}}</span> <span id='last'>{{current_user.last_name}}</span>'s turn.</span>
+	</div>
+	<div id='form_block'>
+		{{shift_form.as_p}}
+		<input id='submit_shift' type='submit'>
+	</div>
+	<div id='calendar'></div>
+>>>>>>> bfcb171d83593e4f97014937ac44b3b76cb7167d
 </body>
 </html>
