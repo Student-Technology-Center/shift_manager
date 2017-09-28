@@ -14,19 +14,6 @@
 	</script>
 </head>	
 <body>
-<<<<<<< HEAD
-	{% if creating_shifts %}
-		<form action='.' method="POST">
-			{% csrf_token %}
-			<input type='submit'>
-		</form>
-		<div id='calendar'></div>
-	{% else %}
-		<h2>
-			Nothing here right now, come back when we're creating shifts.
-		</h2>
-	{% endif %}
-=======
 	<div id='header_block'>
 		<span id='place'>{{starting_place}}</span>
 		<br>
@@ -37,6 +24,5 @@
 		<input id='submit_shift' type='submit'>
 	</div>
 	<div id='calendar'></div>
->>>>>>> bfcb171d83593e4f97014937ac44b3b76cb7167d
 </body>
 </html>
