@@ -3,69 +3,54 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.db import IntegrityError
 
-from shiftmanager.models import ShiftPlacement, ShiftForm
+from shiftmanager.models import ShiftPlacement, ShiftForm, ShiftHelper
 
 import random
 
 def index(request):
-    user_model = get_user_model()
+    context = { }
 
-    context = {}
-    context["creating_shifts"] = settings.CREATING_SHIFTS;
+    context['user_list'] = get_user_model().objects.all()
+    number_of_users = 0
 
-    if not context['creating_shifts']:
-        if request.method == 'POST' and request.POST.get('create_shifts', False) and request.user.is_superuser:
-            settings.USER_SHIFT_PLACE = 1
-            user_list = [x for x in request.POST.keys() if request.POST.get(x, False) == 'on']
-            user_obj_list = [user_model.objects.get(username=x) for x in user_list]
-            num_of_users = len(user_list)
+    if request.method == 'POST':
+        for user in context['user_list']:
+            if request.POST.get(user.username, False):
+                number_of_users += 1
+        order = random.sample(range(0, number_of_users), number_of_users)
+        order_place = 0
+        shifts = ShiftPlacement.objects.all()
 
-            if num_of_users == 0:
-                context['no_users'] = True
-                return render(
-                    request,
-                    'shift_index.html',
-                    context
-                )
+        #Remove all previous shifts.
+        for shift in shifts:
+            shift.delete()
 
-            for user in user_obj_list:
-                user.shiftplacement.order = 0
-                user.shiftplacement.save()
-            
-            list_of_placement = random.sample(range(1, num_of_users + 1), num_of_users)
+        for user in context['user_list']:
+            if request.POST.get(user.username, False):
+                current_user = get_user_model().objects.get(username=user.username)
+                new_placement = ShiftPlacement.objects.create(user=current_user, order=order[order_place])
+                order_place += 1
 
-            for index, user in enumerate(user_obj_list):
-                user.shiftplacement.order = list_of_placement[index]
-                user.shiftplacement.save()
-
-            settings.CREATING_SHIFTS = True
-            settings.USER_SHIFT_PLACE = 0
-            return redirect('/shifts/create/')
-
-    context['user_list'] = user_model.objects.all()
-    
-    if settings.CREATING_SHIFTS:
         return redirect('/shifts/create/')
 
     return render(
         request,
-        'shift_index.html',
+        "shift_index.html",
         context
     )
 
-def shift_page(request):
-    context = {}
-    context['creating_shifts'] = settings.CREATING_SHIFTS
-    context['shift_form'] = ShiftForm(None)
+def create(request):
+    context = { }
+    context['order'] = []
+    all_shifts = list(ShiftPlacement.objects.all())
 
-    user_model = get_user_model()
-    if not context['creating_shifts']:
-        return redirect('/shifts/')
-    context['starting_place'] = settings.USER_SHIFT_PLACE
-    context['current_user'] = ShiftPlacement.objects.get(order=settings.USER_SHIFT_PLACE).user
+    for value, user in enumerate(all_shifts):
+        current_shift = ShiftPlacement.objects.get()
+
+    people = get_user_model().objects.all()
 
     return render(
-            request,
-            'creating_shifts.html',
-            context
-        )
+        request,
+        "shift_create.html",
+        context
+    )

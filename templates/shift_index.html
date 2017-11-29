@@ -6,39 +6,37 @@
         </title>
         <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
         <script type="text/javascript" src="{% static 'js/send_users.js' %}"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/shift-index.css' %}" />
     </head>
     <body>
         {% if creating_shifts %}
             <a href='/shifts/create/'> Go here! We're choosing shifts. </a>
         {% else %}
             {% if user.is_superuser%}
-                <div id='description'>
-                    <h4>Lets make some shifts.</h4>
-                    <p>
-                        What does this do?
-                        <br>
-                        This assigns every user <em>you</em> select a number, 1-n. Where n is
-                        the amount of users selected. It then goes forward 1 to n and lets the user
-                        choose their shift. Once n is hit, n goes again and we loop back towards 1. 
-                        Vice versa.
-                    </p>
-                    {% if no_users %}
-                        <h4 style='color: red;'>No users selected.</h4>
-                    {% endif %}
-                </div>
                 <div id='shift-form'>
+                    <h4>
+                        Choose the users to participate.
+                    </h4>
+                    <p>
+                        The order you choose is not the order they go in - that is random and is determined by the server.
+                        <br>
+                        <br>
+                        <em> -- Hitting 'submit' will start the whole process. -- </em>
+                    </p>
                     <form id='names_form' action='.' method='POST'>
                         {% csrf_token %}
-                        <ul>
-                        {% for x in user_list %}
-                            <li><input type='checkbox' name='{{x.username}}'> {{x.first_name}} {{x.last_name}}</li>
-                        {% endfor %}
-                        </ul>
+                        <div id='names'>
+                            <ul>
+                            {% for x in user_list %}
+                                <li><input class='name-box' type='checkbox' name='{{x.username}}'> {{x.first_name}} {{x.last_name}} ({{x.username}}) </li>
+                            {% endfor %}
+                            </ul>
+                        </div>
                         <input id='send_names' name='create_shifts' type='submit'>
                     </form>
                 </div>
             {% else %}
-                <h2>Nothing going on here right now!</h2>
+                <h4>Nothing going on here right now!</h4>
             {% endif %}
         {% endif %}
     </body>

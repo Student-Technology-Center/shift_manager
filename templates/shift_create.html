@@ -14,15 +14,14 @@
 	</script>
 </head>	
 <body>
-	<div id='header_block'>
-		<span id='place'>{{starting_place}}</span>
-		<br>
-		<span id='header'>It is <span id='first'>{{current_user.first_name}}</span> <span id='last'>{{current_user.last_name}}</span>'s turn.</span>
+	<div>
+		<ul>
+			{% for place in order %}
+				<li>
+					{{place.user.first_name}} {{place.user.last_name}} -- {{place.order|add:"+1"}}
+				</li>
+			{% endfor %}
+		</ul>
 	</div>
-	<div id='form_block'>
-		{{shift_form.as_p}}
-		<input id='submit_shift' type='submit'>
-	</div>
-	<div id='calendar'></div>
 </body>
 </html>

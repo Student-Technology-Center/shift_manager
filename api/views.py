@@ -18,10 +18,7 @@ def add_shift(request):
 			end=request.POST.get('end'),
 			user=ShiftPlacement.objects.get(order=settings.USER_SHIFT_PLACE).user
 		)
-		
-		#shift_entry.save()
 
-		print('New shift saved!')
 		settings.USER_SHIFT_PLACE += 1
 
 		next_user = ShiftPlacement.objects.get(order=settings.USER_SHIFT_PLACE).user
