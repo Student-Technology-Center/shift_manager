@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.forms import ModelForm
 
-class ShiftHelper(models.Model): 	
+class ShiftHelper(models.Model):
 	current_place = models.IntegerField(default=0)
 
 class ShiftPlacement(models.Model):

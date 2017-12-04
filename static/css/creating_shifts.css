@@ -1,4 +1,18 @@
-#first,
-#last {
-    color: red;
+#user-column ul {
+	padding-left: 0;
+	margin-left: 6px;
+	top: 0;
+	left: 0;
+}
+
+#user-column ul li {
+	padding-bottom: 24px;
+	display: block;
+}
+
+#current-user {
+	height: 12px;
+	width: 12px;
+	background-color: red;
+	display: inline-block;
 }
