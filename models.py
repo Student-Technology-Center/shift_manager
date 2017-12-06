@@ -4,11 +4,15 @@ from django.forms import ModelForm
 
 class ShiftHelper(models.Model):
 	current_place = models.IntegerField(default=0)
-	adding = models.BooleanField(default=False)
+	total_amt = models.IntegerField(default=0)
+	adding = models.BooleanField(default=True)
+	total_rounds = models.IntegerField(default=3)
+	amt_per_turn = models.IntegerField(default=4)
 
 class ShiftPlacement(models.Model):
 	id = models.AutoField(primary_key=True)
 	order = models.IntegerField(default=0)
+	amt_per_turn = models.IntegerField(default=4)
 	user = models.OneToOneField(settings.AUTH_USER_MODEL)
 
 class Shift(models.Model):

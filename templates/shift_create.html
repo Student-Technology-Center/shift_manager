@@ -18,16 +18,13 @@
 	<div id='user-column'>
 		<ul>
 			{% for place in order %}
-				<li>
-					{% if current_user.user.username == place.user.username %}
-						<span style='color: red;'> {{place.user.first_name}} {{place.user.last_name}} -- {{place.user.username}} </span>
-					{% else %}
-						{{place.user.first_name}} {{place.user.last_name}} -- {{place.user.username}}
-					{% endif %}
+				<li id='{{place.user.username}}'>
+					{{place.user.first_name}} {{place.user.last_name}} -- {{place.user.username}}
 				</li>
 			{% endfor %}
 		</ul>
 	</div>
+	<button onclick='deleteShifts();'>Delete all shifts</button>
 	<div id='calendar'>
 	</div>
 	<div id='modal-background'>

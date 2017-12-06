@@ -32,14 +32,27 @@ def index(request):
         for shift in shifts:
             shift.delete()
 
+        amt = request.POST.get('amt_per_round', False)
+
         for user in context['user_list']:
             if request.POST.get(user.username, False):
                 current_user = get_user_model().objects.get(username=user.username)
                 new_placement = ShiftPlacement.objects.create(user=current_user, order=order[order_place])
+                if amt:
+                    new_placement.amt_per_turn = amt
                 order_place += 1
 
         new_shift = ShiftHelper.objects.create()
         new_shift.pk = request.user.pk
+
+        rounds = request.POST.get('rounds', False)
+        if rounds:
+            new_shift.total_rounds = rounds
+
+        if amt:
+            new_shift.amt_per_round = amt
+
+        new_shift.total_amt = number_of_users
         new_shift.save()
 
         return redirect('/shifts/create/')

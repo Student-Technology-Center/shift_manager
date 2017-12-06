@@ -43,6 +43,8 @@ $(document).ready(function() {
     })
 
     $('.fc-left h2').text('');
+
+    setCurrentUser(currentUserUsername)
 })
 
 function switchModal() {
@@ -183,7 +185,10 @@ function submitNewShifts() {
             },
             success: function(data) {
                 if (data.status === "failure") {
-                    checkForFailure(data.message)
+                    checkForFailure(data.message);
+                } else {
+                    setCurrentUser(data.next_user);
+                    currentUserFullName = data.first + " " + data.last;
                 }
             }
         })
@@ -228,7 +233,24 @@ function createEvents(data) {
     }
 }
 
+function deleteShifts() {
+    $.ajax({
+        type: 'GET',
+        url: 'shifts/api/deleteall/'
+    })
+}
+
 //lul
 function checkForFailure(msg) {
     $('.fc-left h2').text(msg);
+}
+
+function setCurrentUser(new_user) {
+    $('#' + currentUserUsername).css({
+        'color':'black'
+    })
+    currentUserUsername = new_user
+    $('#' + currentUserUsername).css({
+        'color':'red'
+    })
 }

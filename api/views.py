@@ -29,10 +29,6 @@ def create_shift(request):
 	time_end_obj = (datetime.datetime.strptime(shift_create['start_time'], '%H:%M') + datetime.timedelta(hours=1)).time()
 
 	if shift_create['action'] == 'create':
-		shift_helper = ShiftHelper.objects.get(pk=request.user.pk)
-		shift_helper.current_place += 1 #Remember this should only happen every 4 shifts.
-		shift_helper.save()
-
 		shift = Shift.objects.filter(user=user,start=time_start_obj, day_of_week=shift_create['dow'])
 
 		if len(shift) != 0:
@@ -41,24 +37,56 @@ def create_shift(request):
 				'message' : "You're already working this shift."
 			})
 
+		shift_helper = ShiftHelper.objects.get(pk=request.user.pk)
+
+		#Should only happen once a user has
+		#forced end of turn to bank, or has filled in
+		#all their shifts.
+		if (shift_helper.adding):
+			print("Going forwards")
+			shift_helper.current_place += 1
+		else:
+			print("going back")
+			shift_helper.current_place -= 1
+
+		if (shift_helper.current_place == shift_helper.total_amt):
+			shift_helper.adding = False
+			shift_helper.current_place -= 1
+
+		if  (shift_helper.current_place == -1):
+			shift_helper.adding = True
+			shift_helper.current_place += 1
+
+		shift_helper.save()
+
 		new_shift = Shift.objects.create(day_of_week=shift_create['dow'],
 										 start=time_start_obj,
 										 end=time_end_obj,
 										 user=user)
 
+		print("We are currently on person {}, we are going {}, the max is {}..".format(shift_helper.current_place, 
+			"forward" if shift_helper.adding else "backwards",
+				shift_helper.total_amt))
+
+		next_user = ShiftPlacement.objects.get(order=ShiftHelper.objects.get(pk=request.user.pk).current_place).user
+		print("Go {}!".format(next_user.username))
+
 		return JsonResponse({
 				'status' : 'success',
-				'message' : 'Shifts received.'
+				'message' : 'Shifts received.',
+				'next_user': ShiftPlacement.objects.get(order=ShiftHelper.objects.get(pk=request.user.pk).current_place).user.username,
+				'first': next_user.first_name,
+				'last': next_user.last_name
 		})
 
 	if shift_create['action'] == 'delete':
-		shift = Shift.objects.filter(user=user,start=time_start_obj, day_of_week=shift_create['dow'])
+		shift = Shift.objects.filter(user=user, start=time_start_obj, day_of_week=shift_create['dow'])
 		for i in shift:
-			print(i.day_of_week)
+			i.delete()
 
 		return JsonResponse({
 				'status' : 'success',
-				'message' : 'Shifts received.'
+				'message' : 'Shifts deleted.'
 		})
 
 
@@ -79,3 +107,14 @@ def get_all_shifts(request):
 		}
 		counter += 1
 	return JsonResponse(json_obj, safe=False)
+
+def delete_all(request):
+	if request.user.is_superuser:
+		shifts = Shift.objects.all()
+		for shift in shifts:
+			shift.delete()
+
+	return JsonResponse({
+		'status':'success',
+		'message':'All shifts deleted.'
+	})

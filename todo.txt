@@ -1,4 +1,5 @@
-give max amt of ppl in ShiftHelper
-set adding bool to detect direction of users
 allow people to interject
 check for amt of shifts
+make it so people cant add themselves twice to a time slot.
+do css
+test other edge cases (ask for help on this one)

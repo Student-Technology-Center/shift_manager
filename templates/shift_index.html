@@ -5,8 +5,18 @@
             Shift Manager
         </title>
         <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
-        <script type="text/javascript" src="{% static 'js/send_users.js' %}"></script>
         <link rel="stylesheet" type="text/css" href="{% static 'css/shift-index.css' %}" />
+        <script>
+            function validateForm(form_entry) {
+                var rounds = parseInt(form_entry.rounds.value);
+                var shifts = parseInt(form_entry.amt_per_round.value);
+                if (isNaN(rounds) || isNaN(shifts)) {
+                    $('#warning').text('Make sure the rounds and shifts per round are a number.')
+                    return false;
+                }
+                return true;
+            }
+        </script>
     </head>
     <body>
         {% if creating_shifts %}
@@ -17,14 +27,23 @@
                     <h4>
                         Choose the users to participate.
                     </h4>
+                    <p id='warning' style='color:red;'></p>
                     <p>
                         The order you choose is not the order they go in - that is random and is determined by the server.
                         <br>
                         <br>
                         <em> -- Hitting 'submit' will start the whole process. -- </em>
                     </p>
-                    <form id='names_form' action='.' method='POST'>
+                    <form id='names_form' action='.' method='POST' onsubmit='return validateForm(this);'>
                         {% csrf_token %}
+                        Rounds:
+                        <br>
+                        <input name='rounds' type='text'>
+                        <br>
+                        <br>
+                        Shifts per round:
+                        <br> 
+                        <input name='amt_per_round' type='text'>
                         <div id='names'>
                             <ul>
                             {% for x in user_list %}
