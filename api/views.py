@@ -9,14 +9,6 @@ from shiftmanager.models import Shift, ShiftPlacement, ShiftHelper
 def create_shift(request):
 	shift_create = { }
 
-	return JsonResponse({
-				'status' : 'failure',
-				'message' : "You're already working this shift."
-			})
-
-	#for i in Shift.objects.all():
-	#	i.delete()
-
 	#Really not sure why javascript sends it like string[string], tried to fix.
 	shift_create['username'] = request.POST.get('payload[username]', False)
 	shift_create['start_time'] = request.POST.get('payload[timeStart]', False)

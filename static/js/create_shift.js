@@ -182,7 +182,9 @@ function submitNewShifts() {
                 alert("Something went wrong - file a bug report. Please retry the submission");
             },
             success: function(data) {
-                console.log(data);
+                if (data.status === "failure") {
+                    checkForFailure(data.message)
+                }
             }
         })
     }
