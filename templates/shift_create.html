@@ -10,7 +10,8 @@
 	<link rel='stylesheet' type='text/css' href='{% static "css/creating_shifts.css" %}'>
 	<script type="text/javascript" src="{% static 'js/create_shift.js' %}"></script>
 	<script>
-		var currentUserUsername = "{{current_user.user.username}}"
+		var currentUserUsername = "{{current_user.user.username}}";
+		var currentUserFullName = "{{current_user.user.first_name}} {{current_user.user.last_name}}";
 	</script>
 </head>	
 <body>
@@ -27,6 +28,16 @@
 			{% endfor %}
 		</ul>
 	</div>
-	<div id='calendar'></div>
+	<div id='calendar'>
+	</div>
+	<div id='modal-background'>
+	</div>
+	<div id='modal'>
+		<div id='modal-body'>
+			<button id='modal-delete' onclick='handleModalDelete();'>Delete</button>
+			<button id='modal-close' onclick='switchModal();'>Close</button>
+		</div>
+	</div>
+	<span id='csrf_token'>{% csrf_token %}</span>
 </body>
 </html>

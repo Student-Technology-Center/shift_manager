@@ -4,6 +4,7 @@ from django.forms import ModelForm
 
 class ShiftHelper(models.Model):
 	current_place = models.IntegerField(default=0)
+	adding = models.BooleanField(default=False)
 
 class ShiftPlacement(models.Model):
 	id = models.AutoField(primary_key=True)
