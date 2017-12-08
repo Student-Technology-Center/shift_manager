@@ -1,5 +1,5 @@
 allow people to interject
 check for amt of shifts
-make it so people cant add themselves twice to a time slot.
+make it so people cant add themselves twice to a time slot. (front end)
 do css
 test other edge cases (ask for help on this one)

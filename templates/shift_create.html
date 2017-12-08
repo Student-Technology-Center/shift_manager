@@ -19,7 +19,7 @@
 		<ul>
 			{% for place in order %}
 				<li id='{{place.user.username}}'>
-					{{place.user.first_name}} {{place.user.last_name}} -- {{place.user.username}}
+					{{place.user.first_name}} {{place.user.last_name}} -- {{place.user.username}} (<span id='amt_left_{{place.user.username}}'>{{place.amt_per_turn}}</span>)
 				</li>
 			{% endfor %}
 		</ul>

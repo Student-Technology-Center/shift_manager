@@ -41,18 +41,18 @@ def index(request):
                 if amt:
                     new_placement.amt_per_turn = amt
                 order_place += 1
+                new_placement.save()
 
-        new_shift = ShiftHelper.objects.create()
-        new_shift.pk = request.user.pk
+        new_pk = request.user.pk
 
         rounds = request.POST.get('rounds', False)
         if rounds:
-            new_shift.total_rounds = rounds
+            total_rounds = rounds
 
         if amt:
-            new_shift.amt_per_round = amt
+            amt_per_round = amt
 
-        new_shift.total_amt = number_of_users
+        new_shift = ShiftHelper.objects.create(pk=new_pk,total_rounds=int(total_rounds),amt_per_turn=int(amt),total_amt=number_of_users)
         new_shift.save()
 
         return redirect('/shifts/create/')

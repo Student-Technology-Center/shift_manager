@@ -8,17 +8,18 @@ $(document).ready(function() {
 
     $('#calendar').fullCalendar({
 
-        //customs
         customButtons: {
-            confirmShifts: {
-                text: 'Submit Shifts',
-                click: submitNewShifts
+            passOnTurn: {
+                text: 'Pass',
+                click: function () {
+                    passOnTurn();
+                }
             }
         },
 
         header: {
             left: 'title',
-            right: 'confirmShifts'
+            right: 'passOnTurn'
         },
 
         /* settings below */
@@ -135,6 +136,7 @@ function handleDayClick(data, jsEvent, view) {
     //Queue up for creation
     payloadsForSubmission.push(new Payload('create', currentUserUsername, startTime.format('HH:mm'), startTime.format('ddd')));
     $('#calendar').fullCalendar('renderEvent', newEvent, true);
+    submitNewShifts();
 }
 
 function handleEventClick(data, jsEvent, view) {
@@ -164,11 +166,47 @@ function handleModalDelete() {
     }
 
     selectedEvent = null;
+    submitNewShifts();
     switchModal();
+}
+
+function passOnTurn() {
+    var token = $('#csrf_token input').val();
+    $.ajax({
+        type: 'POST',
+        url: '/shifts/api/create/',
+        data: {
+            csrfmiddlewaretoken:token,
+            'pass':currentUserUsername
+        },
+        fail: function () {
+            alert("Something went wrong - file a bug report. Please retry the submission");
+        },
+        success: function(data) {
+            if (data.status === "failure") {
+                checkForFailure(data.message);
+            } else {
+                if (data.action === 'create') {
+                    setCurrentUser(data.next_user);
+                    currentUserFullName = data.first + " " + data.last;
+                    $('#amt_left_' + data.current_username).text(data.turns_left_current);
+                }
+
+                //Happens when shift is deleted.
+                if(data.username) {
+                    $('#amt_left_' + data.username).text(data.turns_left_current);                        
+                }
+            }
+        }
+    })  
 }
 
 /* 
     This method prepares shifts for submission
+
+    TODO: Make all the setting of (visual) information
+    is done in one function, shouldn't be spread everywhere.
+
 */
 function submitNewShifts() {
     var token = $('#csrf_token input').val();
@@ -187,8 +225,16 @@ function submitNewShifts() {
                 if (data.status === "failure") {
                     checkForFailure(data.message);
                 } else {
-                    setCurrentUser(data.next_user);
-                    currentUserFullName = data.first + " " + data.last;
+                    if (data.action === 'create') {
+                        setCurrentUser(data.next_user);
+                        currentUserFullName = data.first + " " + data.last;
+                        $('#amt_left_' + data.current_username).text(data.turns_left_current);
+                    }
+
+                    //Happens when shift is deleted.
+                    if(data.username) {
+                        $('#amt_left_' + data.username).text(data.turns_left_current);                        
+                    }
                 }
             }
         })
