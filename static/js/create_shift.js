@@ -133,6 +133,12 @@ function handleDayClick(data, jsEvent, view) {
         user: currentUserUsername
     };
 
+    var events = $('#calendar').fullCalendar('clientEvents');
+
+    for (i = 0; i < events.length; i++) {
+        if (events[i].start.isSame(newEvent.start) && newEvent.user === events[i].user) { checkForFailure("You already have a shift here."); return; }
+    }
+
     //Queue up for creation
     payloadsForSubmission.push(new Payload('create', currentUserUsername, startTime.format('HH:mm'), startTime.format('ddd')));
     $('#calendar').fullCalendar('renderEvent', newEvent, true);

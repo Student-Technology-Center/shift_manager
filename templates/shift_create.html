@@ -24,15 +24,19 @@
 			{% endfor %}
 		</ul>
 	</div>
-	<button onclick='deleteShifts();'>Delete all shifts</button>
 	<div id='calendar'>
 	</div>
 	<div id='modal-background'>
 	</div>
 	<div id='modal'>
 		<div id='modal-body'>
-			<button id='modal-delete' onclick='handleModalDelete();'>Delete</button>
-			<button id='modal-close' onclick='switchModal();'>Close</button>
+			<div id='modal-header'>
+				<h2>Confirm</h2>
+			</div>
+			<div id='modal-buttons'>
+				<button id='modal-delete' onclick='handleModalDelete();'>Delete</button>
+				<button id='modal-close' onclick='switchModal();'>Close</button>
+			</div>
 		</div>
 	</div>
 	<span id='csrf_token'>{% csrf_token %}</span>
