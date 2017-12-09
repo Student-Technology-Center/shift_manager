@@ -6,6 +6,22 @@ import datetime
 from shiftmanager.models import Shift, ShiftPlacement, ShiftHelper
 
 #Create a shift
+
+#Future TODO
+
+'''
+	There is too much logic shoved into something called
+	create_shift, really there should be a few more API 
+	endpoints for deleting shifts and such.
+
+	This is definitely something that needs cleaning up,
+	and was obviously a bit rushed.
+
+	FUTURE ENDPOINTS:
+		- Create
+		- Delete
+		- Interject
+'''
 def create_shift(request):
 	shift_create = { }
 
@@ -58,6 +74,7 @@ def create_shift(request):
 				'last': next_user.user.last_name,
 				'current_username':shift_placement.user.username,
 				'turns_left_current': shift_placement.amt_per_turn,
+				'hours_current': len(Shift.objects.filter(user=user)),
 				'action':'create'
 		})
 
@@ -122,12 +139,16 @@ def create_shift(request):
 				'switch': switching,
 				'current_username':shift_placement.user.username,
 				'turns_left_current': shift_placement.amt_per_turn,
+				'hours_current': len(Shift.objects.filter(user=user)),
 				'action':'create'
 		})
 
 	if shift_create['action'] == 'delete':
 		shift = Shift.objects.filter(user=user, start=time_start_obj, day_of_week=shift_create['dow'])
 		for i in shift:
+			shift_pl = ShiftPlacement.objects.get(user=user)
+			shift_pl.amt_per_turn += 1
+			shift_pl.save()
 			i.delete()
 
 		return JsonResponse({
@@ -135,6 +156,7 @@ def create_shift(request):
 				'message':'Shifts deleted.',
 				'username':user.username,
 				'turns_left_current':shift_pl.amt_per_turn,
+				'hours_current': len(Shift.objects.filter(user=user)),
 				'action':'delete'
 		})
 
@@ -180,4 +202,29 @@ def delete_all(request):
 		'username':user.username,
 		'turns_left_current':shift_pl.amt_per_turn,
 		'action':'delete'
+	})
+
+def add_hours_to_user(request):
+	if request.user.is_superuser:
+		hours = request.GET.get('hours', False)
+		username = request.GET.get('username', False)
+		if hours and username:
+			user = get_user_model().objects.get(username=username)
+			shift_placement = ShiftPlacement.objects.get(user=user)
+			try:
+				shift_placement.amt_per_turn += int(hours)
+			except:
+				return JsonResponse({
+					'status':'failure',
+					'message':'Could not convert hours'
+				})
+			shift_placement.save()
+			return JsonResponse({
+				'status':'success',
+				'message':'Hours added',
+				'new_amt':shift_placement.amt_per_turn
+			})
+	return JsonResponse({
+		'status':'failure',
+		'message':'Could not convert hours'
 	})

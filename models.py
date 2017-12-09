@@ -13,6 +13,8 @@ class ShiftPlacement(models.Model):
 	id = models.AutoField(primary_key=True)
 	order = models.IntegerField(default=0)
 	amt_per_turn = models.IntegerField(default=4)
+	interjecting = models.BooleanField(default=False)
+	interjecting_turns = models.IntegerField(default=0)
 	user = models.OneToOneField(settings.AUTH_USER_MODEL)
 
 class Shift(models.Model):

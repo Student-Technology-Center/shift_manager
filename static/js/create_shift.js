@@ -8,18 +8,9 @@ $(document).ready(function() {
 
     $('#calendar').fullCalendar({
 
-        customButtons: {
-            passOnTurn: {
-                text: 'Pass',
-                click: function () {
-                    passOnTurn();
-                }
-            }
-        },
-
         header: {
             left: 'title',
-            right: 'passOnTurn'
+            right: ''
         },
 
         /* settings below */
@@ -196,11 +187,13 @@ function passOnTurn() {
                     setCurrentUser(data.next_user);
                     currentUserFullName = data.first + " " + data.last;
                     $('#amt_left_' + data.current_username).text(data.turns_left_current);
+                    $('#total_hours_' + data.current_username).text(data.hours_current);
                 }
 
                 //Happens when shift is deleted.
                 if(data.username) {
-                    $('#amt_left_' + data.username).text(data.turns_left_current);                        
+                    $('#amt_left_' + data.username).text(data.turns_left_current);
+                    $('#total_hours_' + data.username).text(data.hours_current);
                 }
             }
         }
@@ -235,11 +228,13 @@ function submitNewShifts() {
                         setCurrentUser(data.next_user);
                         currentUserFullName = data.first + " " + data.last;
                         $('#amt_left_' + data.current_username).text(data.turns_left_current);
+                        $('#total_hours_' + data.current_username).text(data.hours_current);
                     }
 
                     //Happens when shift is deleted.
                     if(data.username) {
-                        $('#amt_left_' + data.username).text(data.turns_left_current);                        
+                        $('#amt_left_' + data.username).text(data.turns_left_current);
+                        $('#total_hours_' + data.username).text(data.hours_current);                   
                     }
                 }
             }

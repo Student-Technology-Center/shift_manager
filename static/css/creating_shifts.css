@@ -6,16 +6,99 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
+#menu {
+	width: 256px;
+	background-color: white;
+	margin-left: 12px;
+	margin-bottom: 86px;
+
+	bottom: 0;
+	left: 0;
+
+	position: fixed;
+	z-index: 100000;
+	border: 2px solid black;
+	border-radius: 7px;
+}
+
+.user-info-entry {
+	border-right: 2px solid black;
+	padding-left: 6px;
+	padding-right: 6px;
+	height: 100%;
+}
+
+.menu-button-id {
+	margin-top: 6px;
+	margin-bottom: 12px;
+
+	margin-left: 6px;
+}
+
+#menu-button {
+	position: fixed;
+	height: 32px;
+	width: 256px;
+	background-color: white;
+	border: 2px solid black;
+	border-radius: 7px;
+	z-index: 100000;
+
+	bottom: 0;
+	left: 0;
+	margin-bottom: 12px;
+	margin-left: 12px;
+
+	text-align: center;
+
+	transition: .3s;
+}
+
+#menu-button:hover {
+	cursor: pointer;
+	background-color: black;
+	color: white;
+
+	transition: .3s;
+}
+
+#menu-button h4 {
+	padding-top: 16px;
+	padding-bottom: 16px;
+	margin: 0;
+}
+
+#user-column {
+	width: 100%;
+	height: 64px;
+	background-color: white;
+	position: fixed;
+	z-index: 1000000;
+	border: 2px solid black;
+	margin-bottom: 12px;
+
+	border-radius: 6px;
+
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+
 #user-column ul {
 	padding-left: 0;
 	margin-left: 6px;
+	height: 100%;
 	top: 0;
 	left: 0;
+	width: 100%;
+
+	position: absolute;
+    list-style-type:none;
+    white-space: nowrap;
 }
 
 #user-column ul li {
-	padding-bottom: 24px;
-	display: block;
+	display: inline;
+	color: black;
 }
 
 #current-user {
@@ -23,6 +106,10 @@ body {
 	width: 12px;
 	background-color: red;
 	display: inline-block;
+}
+
+#calendar {
+
 }
 
 #modal {
@@ -88,7 +175,7 @@ body {
 }
 
 .fc-agendaWeek-view tr {
-    height: 100px;
+    height: 75px;
 }
 
 .fc-left h2 {

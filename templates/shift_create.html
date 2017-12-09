@@ -9,21 +9,37 @@
 	<link media='print' rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.7.0/fullcalendar.print.css '>
 	<link rel='stylesheet' type='text/css' href='{% static "css/creating_shifts.css" %}'>
 	<script type="text/javascript" src="{% static 'js/create_shift.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/handle_menu.js' %}"></script>
 	<script>
 		var currentUserUsername = "{{current_user.user.username}}";
 		var currentUserFullName = "{{current_user.user.first_name}} {{current_user.user.last_name}}";
 	</script>
 </head>	
 <body>
-	<div id='user-column'>
+	<div id='menu-button'> Menu </div>
+	<div id='menu' style='visibility:hidden;'>
+		<button id='pass' class='menu-button-id'>Pass</button>
+		<br>
+		<button id='view-order' class='menu-button-id'>View Info</button>
+		<br>
+		<hr>
+		<button id='interject' class='menu-button-id'>Add Hours</button>
+		<br>
+		<span style='color: black' class='menu-button-id'>User (username or first/last):</span>
+		<br>
+		<input id='interject-input' class='menu-button-id'>
+		<br>
+	</div>
+	<div id='user-column' style='visibility:hidden;'>
 		<ul>
 			{% for place in order %}
-				<li id='{{place.user.username}}'>
-					{{place.user.first_name}} {{place.user.last_name}} -- {{place.user.username}} (<span id='amt_left_{{place.user.username}}'>{{place.amt_per_turn}}</span>)
+				<li id='{{place.user.username}}' class='user-info-entry'>
+					{{place.user.first_name}} {{place.user.last_name}} -- {{place.user.username}} (Shifts: <span id='amt_left_{{place.user.username}}'>{{place.amt_per_turn}}</span> Total Hours: <span id='total_hours_{{place.user.username}}'>...</span>)
 				</li>
 			{% endfor %}
 		</ul>
 	</div>
+	
 	<div id='calendar'>
 	</div>
 	<div id='modal-background'>
@@ -32,6 +48,8 @@
 		<div id='modal-body'>
 			<div id='modal-header'>
 				<h2>Confirm</h2>
+			</div>
+			<div id='modal-read-bod'>
 			</div>
 			<div id='modal-buttons'>
 				<button id='modal-delete' onclick='handleModalDelete();'>Delete</button>
