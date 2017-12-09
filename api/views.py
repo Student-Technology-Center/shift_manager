@@ -199,8 +199,6 @@ def delete_all(request):
 	return JsonResponse({
 		'status':'success',
 		'message':'All shifts deleted.',
-		'username':user.username,
-		'turns_left_current':shift_pl.amt_per_turn,
 		'action':'delete'
 	})
 
