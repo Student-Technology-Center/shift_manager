@@ -8,6 +8,8 @@ urlpatterns = [
 ]
 
 #api
+'''
 urlpatterns += [
 	url(r'api/', include('shiftmanager.api.urls', namespace='api'))
 ]
+'''

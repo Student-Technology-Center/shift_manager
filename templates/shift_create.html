@@ -16,32 +16,18 @@
 	</script>
 </head>	
 <body>
-	<div id='menu-button'> Menu </div>
-	<div id='menu' style='visibility:hidden;'>
-		<button id='pass' class='menu-button-id'>Pass</button>
-		<br>
-		<button id='view-order' class='menu-button-id'>View Info</button>
-		<br>
-		<hr>
-		<button id='interject' class='menu-button-id'>Add Hours</button>
-		<br>
-		<span style='color: black' class='menu-button-id'>User (username or first/last):</span>
-		<br>
-		<input id='interject-input' class='menu-button-id'>
-		<br>
+	<div id='debug-window'>
+		<div id='payloads'>
+			<ul>
+			</ul>
+		</div>
 	</div>
-	<div id='user-column' style='visibility:hidden;'>
-		<ul>
-			{% for place in order %}
-				<li id='{{place.user.username}}' class='user-info-entry'>
-					{{place.user.first_name}} {{place.user.last_name}} -- {{place.user.username}} (Shifts: <span id='amt_left_{{place.user.username}}'>{{place.amt_per_turn}}</span> Total Hours: <span id='total_hours_{{place.user.username}}'>...</span>)
-				</li>
-			{% endfor %}
-		</ul>
+	<div id='container'>
+		<span id="error-box"></span>
+		<div id='calendar'></div>
+		<button id='submit-shifts'>Submit</button>
 	</div>
-	
-	<div id='calendar'>
-	</div>
+
 	<div id='modal-background'>
 	</div>
 	<div id='modal'>

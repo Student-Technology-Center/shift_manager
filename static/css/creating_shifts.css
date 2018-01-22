@@ -2,114 +2,48 @@ body {
     padding: 0;
     margin: 0;
 
-    background-color: white;
     font-family: 'Lato', sans-serif;
 }
 
-#menu {
-	width: 256px;
-	background-color: white;
-	margin-left: 12px;
-	margin-bottom: 86px;
-
-	bottom: 0;
-	left: 0;
-
-	position: fixed;
-	z-index: 100000;
-	border: 2px solid black;
-	border-radius: 7px;
-}
-
-.user-info-entry {
-	border-right: 2px solid black;
-	padding-left: 6px;
-	padding-right: 6px;
+#debug-window {
 	height: 100%;
-}
-
-.menu-button-id {
-	margin-top: 6px;
-	margin-bottom: 12px;
-
-	margin-left: 6px;
-}
-
-#menu-button {
-	position: fixed;
-	height: 32px;
-	width: 256px;
-	background-color: white;
-	border: 2px solid black;
-	border-radius: 7px;
-	z-index: 100000;
-
-	bottom: 0;
-	left: 0;
-	margin-bottom: 12px;
-	margin-left: 12px;
-
-	text-align: center;
-
-	transition: .3s;
-}
-
-#menu-button:hover {
-	cursor: pointer;
+	width: 100%;
 	background-color: black;
-	color: white;
+	opacity: .75;
+	z-index: 9999;
 
-	transition: .3s;
-}
-
-#menu-button h4 {
-	padding-top: 16px;
-	padding-bottom: 16px;
-	margin: 0;
-}
-
-#user-column {
-	width: 100%;
-	height: 64px;
-	background-color: white;
+	visibility: hidden;
 	position: fixed;
-	z-index: 1000000;
-	border: 2px solid black;
-	margin-bottom: 12px;
-
-	border-radius: 6px;
-
-	overflow-x: scroll;
-	overflow-y: hidden;
 }
 
-#user-column ul {
-	padding-left: 0;
-	margin-left: 6px;
+#container {
+	background-color: #53647E;
 	height: 100%;
-	top: 0;
-	left: 0;
 	width: 100%;
 
-	position: absolute;
-    list-style-type:none;
-    white-space: nowrap;
-}
-
-#user-column ul li {
-	display: inline;
-	color: black;
-}
-
-#current-user {
-	height: 12px;
-	width: 12px;
-	background-color: red;
-	display: inline-block;
+	position: relative;
 }
 
 #calendar {
+	height: 80%;
+	width: 80%;
+	z-index: 9999;
 
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+#error-box {
+	font-size: 72px;
+	position: absolute;
+	left: 50%;
+	transform: translate(-50%, 0%);
+	margin-top: 12px;
+	overflow: hidden;
+	white-space: nowrap;
+	color: #FD5B6C;
 }
 
 #modal {
@@ -172,22 +106,6 @@ body {
 
 #modal-buttons button {
 	margin-top: 12px;
-}
-
-.fc-agendaWeek-view tr {
-    height: 75px;
-}
-
-.fc-left h2 {
-	color: red;
-	font-size: 14px;
-}
-
-.fc-today {
-    background: white !important;
-    border: none !important;
-    border-top: 1px solid #ddd !important;
-    font-weight: bold;
 }
 
 #modal-buttons button {

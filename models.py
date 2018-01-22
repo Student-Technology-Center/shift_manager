@@ -1,20 +1,21 @@
 from django.db import models
 from django.conf import settings
 from django.forms import ModelForm
+from django.utils import timezone
 
 class ShiftHelper(models.Model):
-	current_place = models.IntegerField(default=0)
-	total_amt = models.IntegerField(default=0)
-	adding = models.BooleanField(default=True)
+	owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+', null=True)
+	current_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+	start_date = models.DateField(default=timezone.now())
+	end_date = models.DateField(default=timezone.now())
+	current_round = models.IntegerField(default=0)
 	total_rounds = models.IntegerField(default=3)
-	amt_per_turn = models.IntegerField(default=4)
+	going_up = models.BooleanField(default=True)
+	shifts_per_turn = models.IntegerField(default=4)
 
 class ShiftPlacement(models.Model):
-	id = models.AutoField(primary_key=True)
-	order = models.IntegerField(default=0)
-	amt_per_turn = models.IntegerField(default=4)
-	interjecting = models.BooleanField(default=False)
-	interjecting_turns = models.IntegerField(default=0)
+	place = models.IntegerField(default=0)
+	amt_left = models.IntegerField(default=4)
 	user = models.OneToOneField(settings.AUTH_USER_MODEL)
 
 class Shift(models.Model):
@@ -31,13 +32,5 @@ class Shift(models.Model):
 	day_of_week = models.CharField(max_length=3, choices=DOW)
 	start = models.TimeField()
 	end = models.TimeField()
+	up_for_grabs = models.BooleanField(default=False)
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    
-class ShiftForm(ModelForm):
-	class Meta:
-		model = Shift
-		fields = [
-			'day_of_week',
-			'start',
-			'end'
-		]

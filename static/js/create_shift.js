@@ -1,10 +1,17 @@
 var payloadsForSubmission = [];
 var modalOpen = true;
 var selectedEvent = null;
+var showDebug = false;
 
 $(document).ready(function() {
     //Add all events
     getEvents();
+
+    $(this).keypress(function(e) {
+        if (e.which == 96) {
+            switchDebug();
+        }
+    })
 
     $('#calendar').fullCalendar({
 
@@ -21,9 +28,11 @@ $(document).ready(function() {
         columnFormat: 'dddd',
         minTime: '08:00:00',
         maxTime: '21:00:00',
+        agendaEventMinHeight: document.getElementById('calendar').offsetHeight / 14,
+        height: "parent",
         contentHeight: "auto",
-        height: "auto",
-        agendaEventMinHeight: 100,
+        displayEventTime: false,
+        aspectRatio: 1,
 
         /* event binding */
         dayClick: handleDayClick,
@@ -36,8 +45,19 @@ $(document).ready(function() {
 
     $('.fc-left h2').text('');
 
+    $('#submit-shifts').click(function(){submitNewShifts()});
+
     setCurrentUser(currentUserUsername)
 })
+
+function switchDebug(){
+    showDebug = !showDebug;
+
+    if (showDebug)
+        $('#debug-window').css({'visibility':'visible'});
+    else
+        $('#debug-window').css({'visibility':'hidden'})
+}
 
 function switchModal() {
     modalOpen = !modalOpen;
@@ -127,13 +147,12 @@ function handleDayClick(data, jsEvent, view) {
     var events = $('#calendar').fullCalendar('clientEvents');
 
     for (i = 0; i < events.length; i++) {
-        if (events[i].start.isSame(newEvent.start) && newEvent.user === events[i].user) { checkForFailure("You already have a shift here."); return; }
+        if (events[i].start.isSame(newEvent.start) && newEvent.user === events[i].user) { setError("User already works this hour."); return; }
     }
 
     //Queue up for creation
     payloadsForSubmission.push(new Payload('create', currentUserUsername, startTime.format('HH:mm'), startTime.format('ddd')));
     $('#calendar').fullCalendar('renderEvent', newEvent, true);
-    submitNewShifts();
 }
 
 function handleEventClick(data, jsEvent, view) {
@@ -163,7 +182,6 @@ function handleModalDelete() {
     }
 
     selectedEvent = null;
-    submitNewShifts();
     switchModal();
 }
 
@@ -181,7 +199,7 @@ function passOnTurn() {
         },
         success: function(data) {
             if (data.status === "failure") {
-                checkForFailure(data.message);
+                setError(data.message);
             } else {
                 if (data.action === 'create') {
                     setCurrentUser(data.next_user);
@@ -218,7 +236,7 @@ function submitNewShifts() {
                 payload:payloadsForSubmission[i]
             },
             fail: function () {
-                alert("Something went wrong - file a bug report. Please retry the submission");
+                setError("Something went wrong - file a bug report. Please retry the submission");
             },
             success: function(data) {
                 if (data.status === "failure") {
@@ -287,15 +305,19 @@ function deleteShifts() {
     })
 }
 
-//lul
+function setError(msg) {
+    $('#error-box').text(msg);
+}
+
 function checkForFailure(msg) {
-    $('.fc-left h2').text(msg);
+    setError(msg);
 }
 
 function setCurrentUser(new_user) {
     $('#' + currentUserUsername).css({
         'color':'black'
     })
+    currentUserFullName = "test."
     currentUserUsername = new_user
     $('#' + currentUserUsername).css({
         'color':'red'

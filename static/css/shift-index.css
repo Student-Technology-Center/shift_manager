@@ -61,3 +61,14 @@ body {
 .name-box:checked {
     background-color: black;
 }
+
+input[type=date],
+input[type=text] {
+    background-color: white;
+    font-size: 15px;
+
+    transition: .3s;
+    border: 2px solid black;
+    border-radius: 2px;
+    padding: 2px;
+}

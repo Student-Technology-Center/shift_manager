@@ -19,44 +19,50 @@
         </script>
     </head>
     <body>
-        {% if creating_shifts %}
-            <a href='/shifts/create/'> Go here! We're choosing shifts. </a>
+        {% if user.is_superuser%}
+            <div id='shift-form'>
+                <h4>
+                    Choose the users to participate.
+                </h4>
+                <p id='warning' style='color:red;'></p>
+                <p>
+                    The order you choose is not the order they go in - that is random and is determined by the server.
+                    <br>
+                    <br>
+                    <em> -- Hitting 'submit' will start the whole process. -- </em>
+                </p>
+                <form id='names_form' action='.' method='POST' onsubmit='return validateForm(this);'>
+                    {% csrf_token %}
+                    Rounds:
+                    <br>
+                    <input name='rounds' type='text'>
+                    <br>
+                    <br>
+                    Shifts per round:
+                    <br> 
+                    <input name='amt_per_round' type='text'>
+                    <br>
+                    <br>
+                    From this date..
+                    <br>
+                    <input name='start_date' type='date'>
+                    <br>
+                    <br>
+                    Until this date..
+                    <br>
+                    <input name='end_date' type='date'>
+                    <div id='names'>
+                        <ul>
+                        {% for x in user_list %}
+                            <li><input class='name-box' type='checkbox' name='{{x.username}}'> {{x.first_name}} {{x.last_name}} ({{x.username}}) </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <input id='send_names' name='create_shifts' type='submit'>
+                </form>
+            </div>
         {% else %}
-            {% if user.is_superuser%}
-                <div id='shift-form'>
-                    <h4>
-                        Choose the users to participate.
-                    </h4>
-                    <p id='warning' style='color:red;'></p>
-                    <p>
-                        The order you choose is not the order they go in - that is random and is determined by the server.
-                        <br>
-                        <br>
-                        <em> -- Hitting 'submit' will start the whole process. -- </em>
-                    </p>
-                    <form id='names_form' action='.' method='POST' onsubmit='return validateForm(this);'>
-                        {% csrf_token %}
-                        Rounds:
-                        <br>
-                        <input name='rounds' type='text'>
-                        <br>
-                        <br>
-                        Shifts per round:
-                        <br> 
-                        <input name='amt_per_round' type='text'>
-                        <div id='names'>
-                            <ul>
-                            {% for x in user_list %}
-                                <li><input class='name-box' type='checkbox' name='{{x.username}}'> {{x.first_name}} {{x.last_name}} ({{x.username}}) </li>
-                            {% endfor %}
-                            </ul>
-                        </div>
-                        <input id='send_names' name='create_shifts' type='submit'>
-                    </form>
-                </div>
-            {% else %}
-                <h4>Nothing going on here right now!</h4>
-            {% endif %}
+            <h4>Nothing going on here right now!</h4>
         {% endif %}
     </body>
 </html>
