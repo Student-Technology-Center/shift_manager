@@ -2,11 +2,9 @@ var payloadsForSubmission = [];
 var modalOpen = true;
 var selectedEvent = null;
 var showDebug = false;
+var curretUser;
 
 $(document).ready(function() {
-    //Add all events
-    getEvents();
-
     $(this).keypress(function(e) {
         if (e.which == 96) {
             switchDebug();
@@ -47,7 +45,7 @@ $(document).ready(function() {
 
     $('#submit-shifts').click(function(){submitNewShifts()});
 
-    setCurrentUser(currentUserUsername)
+    get_current_user();
 })
 
 function switchDebug(){
@@ -91,20 +89,13 @@ function switchModal() {
         'delete' - Deletes the [username]'s shift at [timeStart]
         'create' - Creates a shift for [username] at [timeStart]
 
-    username:
-        '[username]' - Who the action acts upon
-
     timeStart:
         '[hh:mm]' - Sent in military time, denotes when the shift starts.
                     This works since shifts should only be in hour intervals.
 */
-function Payload(action, username, timeStart, dow) {
+function Payload(action, timeStart, dow) {
     if (typeof action != "string"){
         throw "Payload.action must be a string"
-    }
-
-    if (typeof username != "string") {
-        throw "Payload.username must be a string"
     }
 
     if (typeof timeStart != "string") {
@@ -124,7 +115,6 @@ function Payload(action, username, timeStart, dow) {
     }
 
     this.action = action;
-    this.username = username;
     this.timeStart = timeStart;
     this.dow = dow;
 }
@@ -141,17 +131,12 @@ function handleDayClick(data, jsEvent, view) {
         allDay: false,
         start: startTime,
         end: endTime,
-        user: currentUserUsername
     };
 
     var events = $('#calendar').fullCalendar('clientEvents');
 
-    for (i = 0; i < events.length; i++) {
-        if (events[i].start.isSame(newEvent.start) && newEvent.user === events[i].user) { setError("User already works this hour."); return; }
-    }
-
     //Queue up for creation
-    payloadsForSubmission.push(new Payload('create', currentUserUsername, startTime.format('HH:mm'), startTime.format('ddd')));
+    payloadsForSubmission.push(new Payload('create', startTime.format('HH:mm'), startTime.format('ddd')));
     $('#calendar').fullCalendar('renderEvent', newEvent, true);
 }
 
@@ -165,7 +150,7 @@ function handleModalDelete() {
         return selectedEvent._id === event._id
     });
 
-    var currentPayload = new Payload('delete', selectedEvent.user, selectedEvent.start.format("HH:mm"), selectedEvent.start.format('ddd'));
+    var currentPayload = new Payload('delete', selectedEvent.start.format("HH:mm"), selectedEvent.start.format('ddd'));
     var found = false;
 
     for (i = 0; i < payloadsForSubmission.length; i++) {
@@ -185,39 +170,6 @@ function handleModalDelete() {
     switchModal();
 }
 
-function passOnTurn() {
-    var token = $('#csrf_token input').val();
-    $.ajax({
-        type: 'POST',
-        url: '/shifts/api/create/',
-        data: {
-            csrfmiddlewaretoken:token,
-            'pass':currentUserUsername
-        },
-        fail: function () {
-            alert("Something went wrong - file a bug report. Please retry the submission");
-        },
-        success: function(data) {
-            if (data.status === "failure") {
-                setError(data.message);
-            } else {
-                if (data.action === 'create') {
-                    setCurrentUser(data.next_user);
-                    currentUserFullName = data.first + " " + data.last;
-                    $('#amt_left_' + data.current_username).text(data.turns_left_current);
-                    $('#total_hours_' + data.current_username).text(data.hours_current);
-                }
-
-                //Happens when shift is deleted.
-                if(data.username) {
-                    $('#amt_left_' + data.username).text(data.turns_left_current);
-                    $('#total_hours_' + data.username).text(data.hours_current);
-                }
-            }
-        }
-    })  
-}
-
 /* 
     This method prepares shifts for submission
 
@@ -230,7 +182,7 @@ function submitNewShifts() {
     for (i = 0; i < payloadsForSubmission.length; i++) {
         $.ajax({
             type: 'POST',
-            url: '/shifts/api/create/',
+            url: '/shifts/api/payload_dock/',
             data: {
                 csrfmiddlewaretoken:token,
                 payload:payloadsForSubmission[i]
@@ -239,22 +191,7 @@ function submitNewShifts() {
                 setError("Something went wrong - file a bug report. Please retry the submission");
             },
             success: function(data) {
-                if (data.status === "failure") {
-                    checkForFailure(data.message);
-                } else {
-                    if (data.action === 'create') {
-                        setCurrentUser(data.next_user);
-                        currentUserFullName = data.first + " " + data.last;
-                        $('#amt_left_' + data.current_username).text(data.turns_left_current);
-                        $('#total_hours_' + data.current_username).text(data.hours_current);
-                    }
-
-                    //Happens when shift is deleted.
-                    if(data.username) {
-                        $('#amt_left_' + data.username).text(data.turns_left_current);
-                        $('#total_hours_' + data.username).text(data.hours_current);                   
-                    }
-                }
+                console.log(data.details);
             }
         })
     }
@@ -272,32 +209,6 @@ function getEvents() {
     });
 }
 
-function createEvents(data) {
-    var DOW = {
-        "Sun":[0],
-        "Mon":[1],
-        "Tue":[2],
-        "Wed":[3],
-        "Thu":[4],
-        "Fri":[5],
-        "Sat":[6]
-    }
-
-    for (var key in data) {
-        if (data.hasOwnProperty(key)) {
-            var newEvent = {
-                title: data[key].first_name + " " + data[key].last_name,
-                allDay: false,
-                start: data[key].start,
-                end: data[key].end,
-                dow: DOW[data[key].day_of_week],
-                user: data[key].username
-            };
-            $('#calendar').fullCalendar('renderEvent', newEvent, true);
-        }
-    }
-}
-
 function deleteShifts() {
     $.ajax({
         type: 'GET',
@@ -313,13 +224,10 @@ function checkForFailure(msg) {
     setError(msg);
 }
 
-function setCurrentUser(new_user) {
-    $('#' + currentUserUsername).css({
-        'color':'black'
-    })
-    currentUserFullName = "test."
-    currentUserUsername = new_user
-    $('#' + currentUserUsername).css({
-        'color':'red'
+function get_current_user(){
+    $.ajax({
+        type: 'GET',
+        url: '/shifts/api/get_turn_user/',
+        success: function(data) { user = data.details }
     })
 }

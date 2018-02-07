@@ -6,6 +6,7 @@ from django.utils import timezone
 class ShiftHelper(models.Model):
 	owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+', null=True)
 	current_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+	current_place = models.IntegerField(default=0)
 	start_date = models.DateField(default=timezone.now())
 	end_date = models.DateField(default=timezone.now())
 	current_round = models.IntegerField(default=0)

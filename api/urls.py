@@ -2,13 +2,11 @@ from django.conf.urls import url
 
 import shiftmanager.api.views as views
 
-urlpatterns = [
-	url(r'getallshifts/', views.get_all_shifts, name='getallshifts'),
-	url(r'create/', views.create_shift, name='creating_shift'),
-	url(r'deleteall/', views.delete_all, name='deleteall')
-]
-
 #user related shifts
-urlpatterns += [
-	url(r'^getshifts\/(?P<user>.*)', views.get_user_shifts)
+urlpatterns = [
+	url(r'payload_dock/$', views.receive_payloads),
+	url(r'get_leader/$', views.get_leader),
+	url(r'check_leader/$', views.check_leader),
+	url(r'get_turn_user/$', views.get_turn_user),
+	url(r'set_turn_user/$', views.set_turn_user),
 ]
