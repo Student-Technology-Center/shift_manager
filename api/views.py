@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
-from ..models import ShiftHelper
+from ..models import ShiftHelper, Shift
+
+from . import view_helpers
 
 '''
 	User based views
@@ -41,20 +43,15 @@ def set_turn_user(request):
 		request.user.shifthelper.current_user = get_user_model().objects.get(username=username)
 		return JsonResponse({"details":"User has been set."})
 
-
 	return JsonResponse({"details":"An error has occurred."})
 
 '''
 	Payload based views
 '''
 def receive_payloads(request):
-	action = request.POST.get('payload[action]', False)
-	dow = request.POST.get('payload[dow]', False)
-	start_time = request.POST.get('payload[timeStart]', False)
-
-	print(action)
-	print(dow)
-	print(start_time)
+	action = request.POST.get('action', False)
+	dow = request.POST.get('dow', False)
+	start_time = request.POST.get('time_start', False)
 
 	if not action or not dow or not start_time:
 		return JsonResponse({"details":"Missing information"})
@@ -71,6 +68,14 @@ def receive_payloads(request):
 	Returns a JsonResponse for creating a shift
 '''
 def handle_creation(dow, start_time):
+
+	user = view_helpers.get_leader()
+
+	if not user:
+		return JsonResponse({'failed':"Could't create user object."})
+
+	print(user.owner.username)
+
 	return JsonResponse({"details":"Creating!"})
 
 

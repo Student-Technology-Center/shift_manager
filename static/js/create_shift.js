@@ -120,9 +120,6 @@ function Payload(action, timeStart, dow) {
 }
 
 function handleDayClick(data, jsEvent, view) {
-    //We have to add 7 because theres a bug in the lib we use,
-    //if this line is acting weird, remove the .add()
-
     var startTime = moment(data);
     var endTime = moment(data).add(1, 'hours');
 
@@ -185,7 +182,9 @@ function submitNewShifts() {
             url: '/shifts/api/payload_dock/',
             data: {
                 csrfmiddlewaretoken:token,
-                payload:payloadsForSubmission[i]
+                action:payloadsForSubmission[i].action,
+                time_start:payloadsForSubmission[i].timeStart,
+                dow:payloadsForSubmission[i].dow
             },
             fail: function () {
                 setError("Something went wrong - file a bug report. Please retry the submission");

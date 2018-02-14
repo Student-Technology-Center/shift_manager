@@ -9,25 +9,16 @@
 	<link media='print' rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.7.0/fullcalendar.print.css '>
 	<link rel='stylesheet' type='text/css' href='{% static "css/creating_shifts.css" %}'>
 	<script type="text/javascript" src="{% static 'js/create_shift.js' %}"></script>
-	<script type="text/javascript" src="{% static 'js/handle_menu.js' %}"></script>
 	<script>
 		var currentUserUsername = "{{current_user.user.username}}";
 		var currentUserFullName = "{{current_user.user.first_name}} {{current_user.user.last_name}}";
 	</script>
 </head>	
 <body>
-	<div id='debug-window'>
-		<div id='payloads'>
-			<ul>
-			</ul>
-		</div>
-	</div>
 	<div id='container'>
 		<span id="error-box"></span>
 		<div id='calendar'></div>
 		<button id='submit-shifts'>Submit</button>
-		<ol id='user-list'>
-		</ol>
 	</div>
 
 	<div id='modal-background'>
