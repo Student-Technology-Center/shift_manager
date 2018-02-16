@@ -1,8 +1,9 @@
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from ..models import ShiftHelper, Shift
-
 from . import view_helpers
+
+from datetime import datetime, time, timedelta
 
 '''
 	User based views
@@ -46,6 +47,21 @@ def set_turn_user(request):
 	return JsonResponse({"details":"An error has occurred."})
 
 '''
+	TODO: Flesh out into richer API
+'''
+def get_shifts(request):
+	context = {}
+	context['details'] = [{
+		'start':str(shift.start),
+		'end':str(shift.end),
+		'date':str(shift.date),
+		'name': "{} {}".format(shift.user.first_name, shift.user.last_name),
+		'day_of_week':shift.day_of_week,
+		'up_for_grabs':shift.up_for_grabs,
+	} for shift in Shift.objects.all()]
+	return JsonResponse(context, json_dumps_params={'indent': 2})
+
+'''
 	Payload based views
 '''
 def receive_payloads(request):
@@ -69,15 +85,30 @@ def receive_payloads(request):
 '''
 def handle_creation(dow, start_time):
 
-	user = view_helpers.get_leader()
+	lead = view_helpers.get_leader()
 
-	if not user:
+	if not lead:
 		return JsonResponse({'failed':"Could't create user object."})
 
-	print(user.owner.username)
+	user = lead.current_user
+	s = datetime.strptime(start_time, '%H:%M')
+	e = s + timedelta(hours=1)
 
-	return JsonResponse({"details":"Creating!"})
+	start = s.time()
+	end = e.time()
 
+	delta = view_helpers.get_leader().end_date - view_helpers.get_leader().start_date
+	dates = [view_helpers.get_leader().start_date + timedelta(days=date) for date in range(delta.days + 1)]
+
+	for date in dates:
+		if view_helpers.weekday_lookup(date.weekday()) == dow:
+			new_shift = Shift.objects.create(day_of_week=dow,
+											start=start,
+											end=end,
+											date=date,
+											user=user)
+
+	return JsonResponse({"success":"Shift was created."})
 
 '''
 	Returns a JsonResponse for deleting a shift

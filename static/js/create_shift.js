@@ -4,6 +4,8 @@ var selectedEvent = null;
 var showDebug = false;
 var curretUser;
 
+var clr_db = {  }
+
 $(document).ready(function() {
     $(this).keypress(function(e) {
         if (e.which == 96) {
@@ -45,7 +47,7 @@ $(document).ready(function() {
 
     $('#submit-shifts').click(function(){submitNewShifts()});
 
-    get_current_user();
+    getEvents();
 })
 
 function switchDebug(){
@@ -198,13 +200,24 @@ function submitNewShifts() {
 }
 
 function getEvents() {
-    var data;
-
     $.ajax({
         type:'GET',
-        url:'/shifts/api/getallshifts/',
+        url:'/shifts/api/get_shifts/',
         dataType: 'json',
-        success: function(data) { createEvents(data); }
+        success: function(data) {
+            createEvents(data.details)
+        }
+    });
+}
+
+function createEvents(data) {
+    data.forEach(function(el) {
+        $('#calendar').fullCalendar('renderEvent', {
+            title:el.name,
+            start:el.start,
+            end:el.end,
+            dayOfWeek:el.day_of_week
+        })
     });
 }
 
@@ -223,7 +236,7 @@ function checkForFailure(msg) {
     setError(msg);
 }
 
-function get_current_user(){
+function get_current_user() {
     $.ajax({
         type: 'GET',
         url: '/shifts/api/get_turn_user/',

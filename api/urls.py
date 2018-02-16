@@ -9,4 +9,5 @@ urlpatterns = [
 	url(r'check_leader/$', views.check_leader),
 	url(r'get_turn_user/$', views.get_turn_user),
 	url(r'set_turn_user/$', views.set_turn_user),
+	url(r'get_shifts/$', views.get_shifts),
 ]
