@@ -55,10 +55,11 @@ def get_shifts(request):
 		'start':str(shift.start),
 		'end':str(shift.end),
 		'date':str(shift.date),
+		'datetime' : datetime.strptime("{} {}".format(shift.date, shift.start), '%Y-%m-%d %H:%M:%S'),
 		'name': "{} {}".format(shift.user.first_name, shift.user.last_name),
 		'day_of_week':shift.day_of_week,
 		'up_for_grabs':shift.up_for_grabs,
-	} for shift in Shift.objects.all()]
+	} for shift in Shift.objects.all()]	
 	return JsonResponse(context, json_dumps_params={'indent': 2})
 
 '''
@@ -102,14 +103,27 @@ def handle_creation(dow, start_time):
 
 	for date in dates:
 		if view_helpers.weekday_lookup(date.weekday()) == dow:
+			print("Date is {}".format(date))
+			print("Making shift on {} at {}".format(view_helpers.weekday_lookup(date.weekday()), start))
 			new_shift = Shift.objects.create(day_of_week=dow,
-											start=start,
-											end=end,
-											date=date,
-											user=user)
+												start=start,
+												end=end,
+												user=user)
+
+			new_shift.date = date
+			new_shift.save()
 
 	return JsonResponse({"success":"Shift was created."})
 
+def delete_all(request):
+
+	if not request.user.is_superuser:
+		return JsonResponse({"failed":"Not admin."})
+
+	for i in Shift.objects.all():
+		i.delete()
+
+	return JsonResponse({"success":"Deleted ALL shifts."})
 '''
 	Returns a JsonResponse for deleting a shift
 '''

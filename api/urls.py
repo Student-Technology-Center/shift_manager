@@ -10,4 +10,5 @@ urlpatterns = [
 	url(r'get_turn_user/$', views.get_turn_user),
 	url(r'set_turn_user/$', views.set_turn_user),
 	url(r'get_shifts/$', views.get_shifts),
+	url(r'erase_all_pictures_of_ron/$', views.delete_all),
 ]

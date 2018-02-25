@@ -33,7 +33,7 @@ class Shift(models.Model):
 	)
 
 	day_of_week = models.CharField(max_length=3, choices=DOW)
-	date = models.DateField(auto_now=True, null=False)
+	date = models.DateField(null=True)
 	start = models.TimeField()
 	end = models.TimeField()
 	up_for_grabs = models.BooleanField(default=False)

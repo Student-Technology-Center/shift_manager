@@ -141,6 +141,7 @@ function handleDayClick(data, jsEvent, view) {
 
 function handleEventClick(data, jsEvent, view) {
     selectedEvent = data;
+    console.log(data);
     switchModal();
 }
 
@@ -212,11 +213,13 @@ function getEvents() {
 
 function createEvents(data) {
     data.forEach(function(el) {
+        var ev = moment(el.datetime);
+        var ene = moment(el.datetime);
+        ene.add(1, 'hours');
         $('#calendar').fullCalendar('renderEvent', {
             title:el.name,
-            start:el.start,
-            end:el.end,
-            dayOfWeek:el.day_of_week
+            start:ev,
+            end: ene
         })
     });
 }
