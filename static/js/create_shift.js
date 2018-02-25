@@ -142,7 +142,7 @@ function handleDayClick(data, jsEvent, view) {
 function handleEventClick(data, jsEvent, view) {
     selectedEvent = data;
     console.log(data);
-    switchModal();
+    //switchModal();
 }
 
 function handleModalDelete() {
@@ -179,24 +179,26 @@ function handleModalDelete() {
 */
 function submitNewShifts() {
     var token = $('#csrf_token input').val();
+
     for (i = 0; i < payloadsForSubmission.length; i++) {
-        $.ajax({
-            type: 'POST',
-            url: '/shifts/api/payload_dock/',
-            data: {
-                csrfmiddlewaretoken:token,
-                action:payloadsForSubmission[i].action,
-                time_start:payloadsForSubmission[i].timeStart,
-                dow:payloadsForSubmission[i].dow
-            },
-            fail: function () {
-                setError("Something went wrong - file a bug report. Please retry the submission");
-            },
-            success: function(data) {
-                console.log(data.details);
-            }
-        })
     }
+
+    $.ajax({
+        type: 'POST',
+        url: '/shifts/api/payload_dock/',
+        data: {
+            csrfmiddlewaretoken:token,
+            action:payloadsForSubmission[i].action,
+            time_start:payloadsForSubmission[i].timeStart,
+            dow:payloadsForSubmission[i].dow
+        },
+        fail: function () {
+            setError("Something went wrong - file a bug report. Please retry the submission");
+        },
+        success: function(data) {
+            console.log(data);
+        }
+    })
     payloadsForSubmission = [];
 }
 

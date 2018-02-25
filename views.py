@@ -55,8 +55,6 @@ def index(request):
         start_date = request.POST.get('start_date', False)
         end_date = request.POST.get('end_date', False)
 
-        print(ShiftPlacement.objects.get(place=0).user)
-
         new_shift = ShiftHelper.objects.create(owner=request.user, 
             total_rounds=int(total_rounds), 
             shifts_per_turn=int(amt),
@@ -65,7 +63,8 @@ def index(request):
             start_date=start_date,
             end_date=end_date,
             current_round=0,
-            )
+            max_place=number_of_users
+        )
 
         new_shift.save()
 

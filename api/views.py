@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
-from ..models import ShiftHelper, Shift
+from ..models import ShiftHelper, Shift, ShiftPlacement
 from . import view_helpers
 
 from datetime import datetime, time, timedelta
@@ -51,6 +51,7 @@ def set_turn_user(request):
 '''
 def get_shifts(request):
 	context = {}
+
 	context['details'] = [{
 		'start':str(shift.start),
 		'end':str(shift.end),
@@ -59,7 +60,8 @@ def get_shifts(request):
 		'name': "{} {}".format(shift.user.first_name, shift.user.last_name),
 		'day_of_week':shift.day_of_week,
 		'up_for_grabs':shift.up_for_grabs,
-	} for shift in Shift.objects.all()]	
+	} for shift in Shift.objects.all()]
+
 	return JsonResponse(context, json_dumps_params={'indent': 2})
 
 '''
@@ -92,6 +94,8 @@ def handle_creation(dow, start_time):
 		return JsonResponse({'failed':"Could't create user object."})
 
 	user = lead.current_user
+	shift_stats = ShiftPlacement.objects.get(user=user)
+
 	s = datetime.strptime(start_time, '%H:%M')
 	e = s + timedelta(hours=1)
 
@@ -103,15 +107,18 @@ def handle_creation(dow, start_time):
 
 	for date in dates:
 		if view_helpers.weekday_lookup(date.weekday()) == dow:
-			print("Date is {}".format(date))
-			print("Making shift on {} at {}".format(view_helpers.weekday_lookup(date.weekday()), start))
 			new_shift = Shift.objects.create(day_of_week=dow,
 												start=start,
 												end=end,
 												user=user)
-
 			new_shift.date = date
 			new_shift.save()
+
+	shift_stats.amt_left -= 1
+	shift_stats.save()
+
+	if shift_stats.amt_left <= 0:
+		view_helpers.switch_next_user()
 
 	return JsonResponse({"success":"Shift was created."})
 

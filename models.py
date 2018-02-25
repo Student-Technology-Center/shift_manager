@@ -9,6 +9,7 @@ class ShiftHelper(models.Model):
 	owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+', null=True)
 	current_user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 	current_place = models.IntegerField(default=0)
+	max_place = models.IntegerField(default=0)
 	start_date = models.DateField(default=django.utils.timezone.now)
 	end_date = models.DateField(default=django.utils.timezone.now)
 	current_round = models.IntegerField(default=0)

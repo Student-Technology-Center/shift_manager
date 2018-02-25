@@ -1,4 +1,4 @@
-from ..models import ShiftHelper
+from ..models import ShiftHelper, ShiftPlacement
 
 def get_leader():
 	shift_helpers = ShiftHelper.objects.all()
@@ -9,6 +9,18 @@ def get_leader():
 		return shift_helpers[0]
 
 	return False
+
+def get_next_user(x = 1):
+	leader = get_leader()
+	user = ShiftPlacement.objects.get(place=leader.current_place + x).user
+	return user
+
+def switch_next_user():
+	user = view_helpers.get_next_user()
+	lead = get_leader()
+	#lead.current_user = user
+	lead.save()
+	print(lead.max_place)	
 
 def weekday_lookup(day):
 	if day == 0:
