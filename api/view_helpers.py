@@ -10,17 +10,35 @@ def get_leader():
 
 	return False
 
-def get_next_user(x = 1):
-	leader = get_leader()
-	user = ShiftPlacement.objects.get(place=leader.current_place + x).user
-	return user
-
 def switch_next_user():
-	user = view_helpers.get_next_user()
 	lead = get_leader()
-	#lead.current_user = user
+
+	if lead.current_place >= lead.max_place - 1:
+		print("first")
+		lead.going_up = False
+
+	if lead.current_place <= 0:
+		print("second")
+		lead.going_up = True
+
+	if lead.going_up:
+		print("third")
+		lead.current_place += 1
+
+	if not lead.going_up:
+		print("fourth")
+		lead.current_place -= 1
+
 	lead.save()
-	print(lead.max_place)	
+
+	shift = ShiftPlacement.objects.get(user=lead.current_user)
+	shift.amt_left = lead.shifts_per_turn
+	shift.save()
+
+	user = ShiftPlacement.objects.get(place=lead.current_place).user
+	print("New user {} (Place: {})".format(user.username, user.shiftplacement.place))
+	lead.current_user = user
+	lead.save()
 
 def weekday_lookup(day):
 	if day == 0:

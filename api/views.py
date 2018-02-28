@@ -68,18 +68,44 @@ def get_shifts(request):
 	Payload based views
 '''
 def receive_payloads(request):
-	action = request.POST.get('action', False)
-	dow = request.POST.get('dow', False)
-	start_time = request.POST.get('time_start', False)
+	loads = []
+	new_obj = {}
 
-	if not action or not dow or not start_time:
-		return JsonResponse({"details":"Missing information"})
+	for i in request.POST.keys():
+		if 'payloads' not in i:
+			continue
 
-	if action == 'create':
-		return handle_creation(dow, start_time)
+		if 'action' in i:
+			new_obj['action'] = request.POST.get(i, False)
 
-	if action == 'delete':
-		return handle_deletion(dow, start_time)
+		if 'timeStart' in i:
+			new_obj['timeStart'] = request.POST.get(i, False)
+
+		if 'dow' in i:
+			new_obj['dow'] = request.POST.get(i, False)
+
+		if 'dow' in new_obj and 'action' in new_obj and 'timeStart' in new_obj:
+			loads.append(new_obj)
+			new_obj = {}
+
+	leader = view_helpers.get_leader()
+	shift_stats = ShiftPlacement.objects.get(user=leader.current_user)
+	print("Entering a shift for {} (Place: {})".format(leader.current_user.username, shift_stats.place))
+
+	for load in loads:
+		print(shift_stats.amt_left)
+		if load['action'] == 'create':
+			handle_creation(load['dow'], load['timeStart'])
+			shift_stats.amt_left -= 1
+			shift_stats.save()
+
+		if load['action'] == 'delete':
+			handle_deletion(load['dow'], load['timeStart'])
+			shift_stats.amt_left += 1
+			shift_stats.save()
+
+		if shift_stats.amt_left <= 0:
+			view_helpers.switch_next_user()
 
 	return JsonResponse({"details":"An error has occurred, make sure payload info is correct"})
 
@@ -89,9 +115,6 @@ def receive_payloads(request):
 def handle_creation(dow, start_time):
 
 	lead = view_helpers.get_leader()
-
-	if not lead:
-		return JsonResponse({'failed':"Could't create user object."})
 
 	user = lead.current_user
 	shift_stats = ShiftPlacement.objects.get(user=user)
@@ -114,14 +137,6 @@ def handle_creation(dow, start_time):
 			new_shift.date = date
 			new_shift.save()
 
-	shift_stats.amt_left -= 1
-	shift_stats.save()
-
-	if shift_stats.amt_left <= 0:
-		view_helpers.switch_next_user()
-
-	return JsonResponse({"success":"Shift was created."})
-
 def delete_all(request):
 
 	if not request.user.is_superuser:
@@ -135,5 +150,5 @@ def delete_all(request):
 	Returns a JsonResponse for deleting a shift
 '''
 def handle_deletion(dow, start_time):
-	return JsonResponse({"details":"Deleting!"})
+	pass
 

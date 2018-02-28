@@ -179,18 +179,20 @@ function handleModalDelete() {
 */
 function submitNewShifts() {
     var token = $('#csrf_token input').val();
+    var payloads = [];
 
     for (i = 0; i < payloadsForSubmission.length; i++) {
+        payloads[i] = payloadsForSubmission[i];
     }
+
+    console.log(payloads);
 
     $.ajax({
         type: 'POST',
         url: '/shifts/api/payload_dock/',
         data: {
             csrfmiddlewaretoken:token,
-            action:payloadsForSubmission[i].action,
-            time_start:payloadsForSubmission[i].timeStart,
-            dow:payloadsForSubmission[i].dow
+            payloads: payloads,
         },
         fail: function () {
             setError("Something went wrong - file a bug report. Please retry the submission");
