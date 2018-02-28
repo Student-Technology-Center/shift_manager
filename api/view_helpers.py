@@ -14,19 +14,15 @@ def switch_next_user():
 	lead = get_leader()
 
 	if lead.current_place >= lead.max_place - 1:
-		print("first")
 		lead.going_up = False
 
 	if lead.current_place <= 0:
-		print("second")
 		lead.going_up = True
 
 	if lead.going_up:
-		print("third")
 		lead.current_place += 1
 
 	if not lead.going_up:
-		print("fourth")
 		lead.current_place -= 1
 
 	lead.save()
@@ -36,7 +32,6 @@ def switch_next_user():
 	shift.save()
 
 	user = ShiftPlacement.objects.get(place=lead.current_place).user
-	print("New user {} (Place: {})".format(user.username, user.shiftplacement.place))
 	lead.current_user = user
 	lead.save()
 

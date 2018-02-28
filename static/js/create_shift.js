@@ -3,8 +3,8 @@ var modalOpen = true;
 var selectedEvent = null;
 var showDebug = false;
 var curretUser;
-
-var clr_db = {  }
+var shiftsUsedThisTurn;
+var clr_db = {};
 
 $(document).ready(function() {
     $(this).keypress(function(e) {
@@ -49,6 +49,15 @@ $(document).ready(function() {
 
     getEvents();
 })
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 function switchDebug(){
     showDebug = !showDebug;
@@ -205,27 +214,51 @@ function submitNewShifts() {
 }
 
 function getEvents() {
+    /*
+        This is for optmization.
+        Does a call only on the
+        current week, since we only
+        need to display a week.
+    */
+
+    var start = moment().startOf('week').format("YYYY-MM-DD"); 
+    var end = moment().endOf('week').format("YYYY-MM-DD");
+
+    console.log("Getting dates between " + start + " and " + end + ".")
+
     $.ajax({
         type:'GET',
-        url:'/shifts/api/get_shifts/',
+        url:'/shifts/api/get_shifts/?start=' + start + "&end=" + end,
         dataType: 'json',
         success: function(data) {
-            createEvents(data.details)
+            createEvents(data.success)
         }
     });
 }
 
 function createEvents(data) {
+    console.log("Got " + data.length + " results.");
     data.forEach(function(el) {
         var ev = moment(el.datetime);
         var ene = moment(el.datetime);
         ene.add(1, 'hours');
+
+        var userColor = getUserColor(el.name);
         $('#calendar').fullCalendar('renderEvent', {
             title:el.name,
             start:ev,
-            end: ene
+            end: ene,
+            color: userColor
         })
     });
+}
+
+function getUserColor(username) {
+    if (!clr_db.hasOwnProperty(username)) {
+        clr_db[username] = getRandomColor();
+    }
+
+    return clr_db[username];
 }
 
 function deleteShifts() {

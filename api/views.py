@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from ..models import ShiftHelper, Shift, ShiftPlacement
 from . import view_helpers
 
@@ -52,15 +53,44 @@ def set_turn_user(request):
 def get_shifts(request):
 	context = {}
 
-	context['details'] = [{
-		'start':str(shift.start),
-		'end':str(shift.end),
-		'date':str(shift.date),
+	leader = view_helpers.get_leader()
+
+	start = request.GET.get('start', leader.start_date)
+	end = request.GET.get('end', leader.end_date)
+	details = request.GET.get('details', False)
+
+	if details:
+		return JsonResponse({"details":"Specify a range with <start> and <end> the format YYYY-MM-DD" +
+									   " or specify a username with <username>."}, json_dumps_params={'indent': 2})
+
+	if type(start) == str:
+		try:
+			start = datetime.strptime(start, "%Y-%m-%d")
+		except ValueError:
+			return JsonResponse({'failed':"Couldn't parse date in start."}, json_dumps_params={'indent': 2})
+
+	if type(end) == str:
+		try:
+			end = datetime.strptime(end, "%Y-%m-%d")
+		except ValueError:
+			return JsonResponse({'failed':"Couldn't parse date in end."}, json_dumps_params={'indent': 2})
+
+	shift_start = Shift.objects.filter(date__gte=start)
+	shift_end = Shift.objects.filter(date__lte=end)
+	shifts = shift_start & shift_end
+
+	username = request.GET.get('username', False)
+
+	if username:
+		user_set = Shift.objects.filter(user__username=username)
+		shifts &= user_set
+
+	context['success'] = [{
 		'datetime' : datetime.strptime("{} {}".format(shift.date, shift.start), '%Y-%m-%d %H:%M:%S'),
 		'name': "{} {}".format(shift.user.first_name, shift.user.last_name),
 		'day_of_week':shift.day_of_week,
 		'up_for_grabs':shift.up_for_grabs,
-	} for shift in Shift.objects.all()]
+	} for shift in shifts]
 
 	return JsonResponse(context, json_dumps_params={'indent': 2})
 
@@ -90,7 +120,6 @@ def receive_payloads(request):
 
 	leader = view_helpers.get_leader()
 	shift_stats = ShiftPlacement.objects.get(user=leader.current_user)
-	print("Entering a shift for {} (Place: {})".format(leader.current_user.username, shift_stats.place))
 
 	for load in loads:
 		print(shift_stats.amt_left)
@@ -107,7 +136,7 @@ def receive_payloads(request):
 		if shift_stats.amt_left <= 0:
 			view_helpers.switch_next_user()
 
-	return JsonResponse({"details":"An error has occurred, make sure payload info is correct"})
+	return JsonResponse({"details":"An error has occurred, make sure payload info is correct"}, json_dumps_params={'indent': 2})
 
 '''
 	Returns a JsonResponse for creating a shift
