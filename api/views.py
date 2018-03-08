@@ -5,12 +5,12 @@ from ..models import ShiftHelper, Shift, ShiftPlacement
 from . import view_helpers
 
 from datetime import datetime, time, timedelta
+from math import floor, ceil
 
 '''
 	User based views
 '''
 def get_leader(request):
-
 	helpers = ShiftHelper.objects.all()
 
 	if helpers.count() > 1:
@@ -32,7 +32,37 @@ def check_leader(request):
 	return JsonResponse({"details":"False"})
 
 def get_turn_user(request):
-	return JsonResponse({"main_user": request.user.shifthelper.current_user.username})
+	turns = request.GET.get('turns', 0)
+
+	if type(turns) == str:
+		try:
+			turns = int(turns)
+		except ValueError:
+			return JsonResponse({"failed":"If using turns GET parameter, please input a valid integer."})
+
+	leader = view_helpers.get_leader()
+	rounds_skipped = floor(turns / leader.max_place)
+	turns %= leader.max_place - 1
+	direction = None
+
+	if (rounds_skipped % 2) == 0:
+		direction = leader.going_up
+	else:
+		direction = not leader.going_up
+
+	if direction:
+		turn = leader.current_place + turns
+		if (turn >= leader.max_place):
+			turn -= floor(turns / 2)
+	else:
+		turn = leader.current_place - turns
+		if (turn < 0):
+			turn += floor(turns / 2)
+
+	print(leader.current_place)
+	print(turn)
+
+	return JsonResponse({"main_user": "someone"})
 
 def set_turn_user(request):
 	username = request.POST.get('username', False)
