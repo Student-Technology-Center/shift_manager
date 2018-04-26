@@ -39,3 +39,6 @@ class Shift(models.Model):
 	end = models.TimeField()
 	up_for_grabs = models.BooleanField(default=False)
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+class ShiftFile(models.Model):
+	sheet = models.FileField(upload_to='sheets/%Y-%m-%d/')

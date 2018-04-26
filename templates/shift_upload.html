@@ -1,0 +1,19 @@
+{% load static %}
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Upload Excel Sheet</title>
+  <meta name="author" content="Christian Brintnall">
+  <script src="{% static 'js/upload.js' %}"></script>
+</head>
+
+<body>
+    <form action='.' method='POST'>
+        {{ form.as_p }}
+        <input type="submit" value="Upload" />
+    </form>
+</body>
+</html>

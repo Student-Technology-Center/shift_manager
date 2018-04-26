@@ -4,8 +4,33 @@ from django.conf import settings
 from django.db import IntegrityError
 
 from shiftmanager.models import ShiftPlacement, ShiftHelper
+from .forms import ShiftExcelUpload
 
 import random
+
+'''
+    This view exists as a solution to
+    get the shifts onto our website.
+    I never finished Shift Manager, but
+    I have left my code in-case you are
+    brave enough to finish it. For now,
+    you simply upload an excel document
+    in David's format and it'll scrape it for the shifts.
+'''
+def file_upload(request):
+    context = { "form": ShiftExcelUpload() }
+
+    if request.POST:
+        
+
+    return render(
+        request,
+        "shift_upload.html",
+        context
+    )
+
+def handle_upload(file):
+    with open()
 
 def index(request):
     context = { }

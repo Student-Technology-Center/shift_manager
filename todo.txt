@@ -1,3 +1,0 @@
-* allow people to interject
-* Should be a next button
-* Should allow to delete a shift during someone elses turn 
