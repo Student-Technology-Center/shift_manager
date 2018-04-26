@@ -26,14 +26,15 @@
 				<div class="ui card">
 				  <div class="content">
 				    <div class="header">{{ sheet.created_at }}</div>
+				    <p> Uploaded by: {{ sheet.user.username }} </p>
 				  </div>
 				  <div class="extra content">
-				    <button class="ui button">Download</button>
+				    <a href="{{ sheet.sheet.url }}" download><button class="ui button">Download</button></a>
 				  </div>
 				</div>
 			{% endfor %}
 		</div>
-		<div id='upload' style='display: none;'>
+		<div id='upload'>
 			<form action='.' method='POST' enctype="multipart/form-data">
 		    	{% csrf_token %}
 		        {{ form.as_p }}

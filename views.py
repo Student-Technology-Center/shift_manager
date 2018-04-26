@@ -5,6 +5,7 @@ from django.db import IntegrityError
 
 from shiftmanager.models import ShiftPlacement, ShiftHelper, ShiftFile
 from .forms import ShiftExcelUpload
+from utils.message import send_stc_email
 
 import random
 
@@ -18,12 +19,16 @@ import random
     in David's format and it'll scrape it for the shifts.
 '''
 def file_upload(request):
-    context = { "form": ShiftExcelUpload(), "sheets": ShiftFile.objects.all() }
 
     if request.POST:
         form = ShiftExcelUpload(request.POST, request.FILES)
         if form.is_valid():
+            form.user = request.user
             form.save()
+    else:
+        form = ShiftExcelUpload()
+
+    context = { "form": form, "sheets": ShiftFile.objects.all() }
 
     return render(
         request,

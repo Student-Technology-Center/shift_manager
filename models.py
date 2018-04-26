@@ -42,6 +42,7 @@ class Shift(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 class ShiftFile(models.Model):
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 	sheet = models.FileField(upload_to='media/sheets/%Y-%m-%d/')
 
