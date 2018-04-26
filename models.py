@@ -21,7 +21,7 @@ class ShiftHelper(models.Model):
 class ShiftPlacement(models.Model):
 	place = models.IntegerField(default=0)
 	amt_left = models.IntegerField(default=4)
-	user = models.OneToOneField(settings.AUTH_USER_MODEL)
+	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 class Shift(models.Model):
 	DOW = (
