@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.forms import ModelForm
 from django.utils import timezone
+import os
 
 import django
 
@@ -41,4 +42,8 @@ class Shift(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 class ShiftFile(models.Model):
-	sheet = models.FileField(upload_to='sheets/%Y-%m-%d/')
+	created_at = models.DateTimeField(auto_now_add=True)
+	sheet = models.FileField(upload_to='media/sheets/%Y-%m-%d/')
+
+	def filename(self):
+	    return os.path.basename(self.sheet.name)

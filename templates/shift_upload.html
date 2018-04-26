@@ -3,17 +3,43 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+	<meta charset="utf-8">
+	<title>Upload Excel Sheet</title>
+	<meta name="author" content="Christian Brintnall">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+	<script type="text/javascript" src="{% static 'semantic/semantic.min.js' %}"></script>
+	<script src="{% static 'js/upload.js' %}"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.min.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'css/upload_excel.css' %}" />
 
-  <title>Upload Excel Sheet</title>
-  <meta name="author" content="Christian Brintnall">
-  <script src="{% static 'js/upload.js' %}"></script>
+	<script> 
+		function getFile() {
+
+		}
+	</script>
 </head>
 
 <body>
-    <form action='.' method='POST'>
-        {{ form.as_p }}
-        <input type="submit" value="Upload" />
-    </form>
+	<div id='holder'>
+		<div id='downloads'>
+			{% for sheet in sheets %}
+				<div class="ui card">
+				  <div class="content">
+				    <div class="header">{{ sheet.created_at }}</div>
+				  </div>
+				  <div class="extra content">
+				    <button class="ui button">Download</button>
+				  </div>
+				</div>
+			{% endfor %}
+		</div>
+		<div id='upload' style='display: none;'>
+			<form action='.' method='POST' enctype="multipart/form-data">
+		    	{% csrf_token %}
+		        {{ form.as_p }}
+		        <input type="submit" value="Upload" />
+	    	</form>
+		</div>
+	</div>
 </body>
 </html>
