@@ -13,6 +13,7 @@ def scrape_schedule(f):
     start = 0
     end = 0
     time = { }
+    return_list = []
     start_t = datetime.strptime('08:00', '%H:%M').time()
 
     #Figure out where the information is stored row wise
@@ -38,8 +39,13 @@ def scrape_schedule(f):
     for i in sh:
         for c, j in enumerate(sh[i]):
             if type(j) != float and j != 'x' and type(j) != int:
-                print("{} -> {}".format(j, time[c].strftime('%I:%M %p')))
-        print("------------------------------------------")
+                return_list.append((j, time[c]))
+
+    return []
+
+    new_list = [x for x in return_list if type(x[0]) == str]
+
+    return [x for x in new_list if (x[0].lower() != 'noon')]
 
 def main():
     scrape_schedule("schedule.xlsm")

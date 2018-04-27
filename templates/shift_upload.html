@@ -8,22 +8,37 @@
 	<meta name="author" content="Christian Brintnall">
 	<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
 	<script type="text/javascript" src="{% static 'semantic/semantic.min.js' %}"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/shift_upload.css' %}" />
 	<script src="{% static 'js/upload.js' %}"></script>
 	<script>
+		var sendFile = false;
+
+		/* 
+			The fact that this works disgusts me.
+
+			First time running it, it enables the modal.
+			Once the user clicks approve that flips sendFile to true.
+			ON an approval, a fake click is sent to the form, causing
+			this to run again and return true since the global is true.
+		*/
 		function confirmFile() {
-			var submit = "";
+			if (sendFile)
+				return sendFile;
+
 			$('.ui.modal')
 				.modal({
 					closable: false,
 					onDeny: function() {
-						submit = false;
 					},	
 					onApprove: function() {
-						submit = true;
+						sendFile = true;
+						$(this).modal('hide');
+						$('#upload form input[type=submit]').click();
 					}
 				})
 				.modal('show');
-			return submit;
+
+			return false;
 		}
 	</script>
 	<link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.min.css' %}" />
@@ -34,11 +49,11 @@
 	<div class="ui modal">
   		<div class="header">Confirm</div>
   		<div class='content'>
-  			<p> Are you <em>sure</em> you want to do this? </p>
-  			<p> Doing this removes all the currently uploaded shifts and rescrapes what you upload </p>
+  			<h3> Are you <em>sure</em> you want to do this? </h3>
+  			<h4> Doing this removes all the currently uploaded shifts and rescrapes what you upload. </h4>
   		</div>
   		<div class="actions">
-		    <div class="ui green approve button">Approve</div>
+		    <div class="ui green approve button">Delete and Upload</div>
 			<div class="ui red cancel button">Cancel</div>
 	    </div>
 	</div>
@@ -52,6 +67,9 @@
 				  </div>
 				  <div class="extra content">
 				    <a href="{{ sheet.sheet.url }}" download><button class="ui button">Download</button></a>
+				    {% if request.user.is_superuser %}
+				    	<a href="/shifts/remove/{{ sheet.pk }}/" ><button class="ui inverted red button">Delete</button></a>
+				    {% endif %}
 				  </div>
 				</div>
 			{% endfor %}

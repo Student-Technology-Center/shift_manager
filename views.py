@@ -36,6 +36,13 @@ def file_upload(request):
         context
     )
 
+def remove(request, pk):
+    if request.user.is_superuser:
+        item = ShiftFile.objects.get(pk=pk)
+        item.delete()
+
+    return redirect('/shifts/')
+
 def index(request):
     context = { }
 

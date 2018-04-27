@@ -7,9 +7,8 @@ from . import view_helpers
 from datetime import datetime, time, timedelta
 from math import floor, ceil
 
-'''
-	User based views
-'''
+from .. models import ShiftFile
+
 def get_leader(request):
 	helpers = ShiftHelper.objects.all()
 
