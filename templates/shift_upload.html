@@ -9,17 +9,39 @@
 	<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
 	<script type="text/javascript" src="{% static 'semantic/semantic.min.js' %}"></script>
 	<script src="{% static 'js/upload.js' %}"></script>
-	<link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.min.css' %}" />
-	<link rel="stylesheet" type="text/css" href="{% static 'css/upload_excel.css' %}" />
-
-	<script> 
-		function getFile() {
-
+	<script>
+		function confirmFile() {
+			var submit = "";
+			$('.ui.modal')
+				.modal({
+					closable: false,
+					onDeny: function() {
+						submit = false;
+					},	
+					onApprove: function() {
+						submit = true;
+					}
+				})
+				.modal('show');
+			return submit;
 		}
 	</script>
+	<link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.min.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'css/upload_excel.css' %}" />
 </head>
 
 <body>
+	<div class="ui modal">
+  		<div class="header">Confirm</div>
+  		<div class='content'>
+  			<p> Are you <em>sure</em> you want to do this? </p>
+  			<p> Doing this removes all the currently uploaded shifts and rescrapes what you upload </p>
+  		</div>
+  		<div class="actions">
+		    <div class="ui green approve button">Approve</div>
+			<div class="ui red cancel button">Cancel</div>
+	    </div>
+	</div>
 	<div id='holder'>
 		<div id='downloads'>
 			{% for sheet in sheets %}
@@ -35,7 +57,7 @@
 			{% endfor %}
 		</div>
 		<div id='upload'>
-			<form action='.' method='POST' enctype="multipart/form-data">
+			<form action='.' method='POST' enctype="multipart/form-data" onsubmit="return confirmFile();">
 		    	{% csrf_token %}
 		        {{ form.as_p }}
 		        <input type="submit" value="Upload" />
