@@ -19,5 +19,7 @@ class ShiftExcelUpload(forms.ModelForm):
 	class Meta:
 		model = ShiftFile
 		fields = [
-			"sheet"
+			"sheet",
+			"first_date",
+			"last_date"
 		]

@@ -10,6 +10,8 @@
 	<script type="text/javascript" src="{% static 'semantic/semantic.min.js' %}"></script>
 	<link rel="stylesheet" type="text/css" href="{% static 'css/shift_upload.css' %}" />
 	<script src="{% static 'js/upload.js' %}"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.min.css' %}" />
+
 	<script>
 		var sendFile = false;
 
@@ -41,8 +43,6 @@
 			return false;
 		}
 	</script>
-	<link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.min.css' %}" />
-	<link rel="stylesheet" type="text/css" href="{% static 'css/upload_excel.css' %}" />
 </head>
 
 <body>
@@ -58,6 +58,7 @@
 	    </div>
 	</div>
 	<div id='holder'>
+		<a href='/'> Home </a>
 		<div id='downloads'>
 			{% for sheet in sheets %}
 				<div class="ui card">
@@ -81,6 +82,9 @@
 		        <input type="submit" value="Upload" />
 	    	</form>
 		</div>
+		<h1> There are {{ count }} shifts </h1>
+		<h1> You have {{ shifts }} shifts </h1>
+		<a href='/shifts/claim/'><button>Claim Shifts</button></a>
 	</div>
 </body>
 </html>

@@ -151,7 +151,6 @@ def receive_payloads(request):
 	shift_stats = ShiftPlacement.objects.get(user=leader.current_user)
 
 	for load in loads:
-		print(shift_stats.amt_left)
 		if load['action'] == 'create':
 			handle_creation(load['dow'], load['timeStart'])
 			shift_stats.amt_left -= 1
@@ -196,7 +195,6 @@ def handle_creation(dow, start_time):
 			new_shift.save()
 
 def delete_all(request):
-
 	if not request.user.is_superuser:
 		return JsonResponse({"failed":"Not admin."})
 
@@ -204,6 +202,7 @@ def delete_all(request):
 		i.delete()
 
 	return JsonResponse({"success":"Deleted ALL shifts."})
+
 '''
 	Returns a JsonResponse for deleting a shift
 '''
