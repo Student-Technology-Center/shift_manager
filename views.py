@@ -5,6 +5,7 @@ from django.db import IntegrityError
 
 from shiftmanager.models import ShiftPlacement, ShiftHelper, ShiftFile, Shift
 from utils.message import send_stc_email
+from login.models import UserOptions
 
 from .forms import ShiftExcelUpload
 from .helpers import claim_shifts
@@ -31,11 +32,15 @@ def file_upload(request):
     else:
         form = ShiftExcelUpload()
 
+    shift_info = UserOptions.objects.get(user=request.user).shift_name
+    names = shift_info == "" or shift_info is None
+
     context = { 
-        "form": form, 
+        "form"  : form, 
         "sheets": ShiftFile.objects.all(), 
-        "count": Shift.objects.all().count(), 
-        "shifts": Shift.objects.filter(user=request.user).count()
+        "count" : Shift.objects.all().count(), 
+        "shifts": Shift.objects.filter(user=request.user).count(),
+        "names" : names
     }
 
     return render(

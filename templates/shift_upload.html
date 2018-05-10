@@ -58,6 +58,12 @@
 	    </div>
 	</div>
 	<div id='holder'>
+		<div class="ui inverted menu">
+		  <a class="browse item active visible">
+		    Browse
+		    <i class="dropdown icon"></i>
+		  </a>
+		</div>
 		<a href='/'> Home </a>
 		<div id='downloads'>
 			{% for sheet in sheets %}
@@ -84,7 +90,10 @@
 		</div>
 		<h1> There are {{ count }} shifts </h1>
 		<h1> You have {{ shifts }} shifts </h1>
-		<a href='/shifts/claim/'><button>Claim Shifts</button></a>
+		{% if names %}
+			<h1 style="color: red;"> You are missing a sheet name - Add it <a href='/user/profile/'> here </a> to claim shifts.</h1>
+		{% endif %}
+ 		<a href='/shifts/claim/'><button>Claim Shifts</button></a>
 	</div>
 </body>
 </html>

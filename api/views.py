@@ -82,10 +82,8 @@ def set_turn_user(request):
 def get_shifts(request):
 	context = {}
 
-	leader = view_helpers.get_leader()
-
-	start = request.GET.get('start', leader.start_date)
-	end = request.GET.get('end', leader.end_date)
+	start = request.GET.get('start', False)
+	end = request.GET.get('end', False)
 	details = request.GET.get('details', False)
 
 	if details:
@@ -94,15 +92,15 @@ def get_shifts(request):
 
 	if type(start) == str:
 		try:
-			start = datetime.strptime(start, "%Y-%m-%d")
+			start = datetime.strptime(start, "%m-%d-%Y")
 		except ValueError:
-			return JsonResponse({'failed':"Couldn't parse date in start."}, json_dumps_params={'indent': 2})
+			return JsonResponse({'failed':"Couldn't parse date in start. Make sure it's a date string in form YYYY-MM-DD."}, json_dumps_params={'indent': 2})
 
 	if type(end) == str:
 		try:
-			end = datetime.strptime(end, "%Y-%m-%d")
+			end = datetime.strptime(end, "%m-%d-%Y")
 		except ValueError:
-			return JsonResponse({'failed':"Couldn't parse date in end."}, json_dumps_params={'indent': 2})
+			return JsonResponse({'failed':"Couldn't parse date in end. Make sure it's a date string in form YYYY-MM-DD."}, json_dumps_params={'indent': 2})
 
 	shift_start = Shift.objects.filter(date__gte=start)
 	shift_end = Shift.objects.filter(date__lte=end)
@@ -114,12 +112,16 @@ def get_shifts(request):
 		user_set = Shift.objects.filter(user__username=username)
 		shifts &= user_set
 
+	if len(shifts) == 0:
+		return JsonResponse({
+			{}
+		})
+
 	context['success'] = [{
 		'datetime' : datetime.strptime("{} {}".format(shift.date, shift.start), '%Y-%m-%d %H:%M:%S'),
 		'name': "{} {}".format(shift.user.first_name, shift.user.last_name),
-		'day_of_week':shift.day_of_week,
-		'up_for_grabs':shift.up_for_grabs,
-	} for shift in shifts]
+		'day_of_week':shift.day_of_week
+	} for shift in shifts if shift.user != None]
 
 	return JsonResponse(context, json_dumps_params={'indent': 2})
 
