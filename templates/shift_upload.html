@@ -1,105 +1,103 @@
+{% extends 'base.html' %}
 {% load static %}
-<!doctype html>
 
-<html lang="en">
-<head>
-	<meta charset="utf-8">
-	<title>Upload Excel Sheet</title>
-	<meta name="author" content="Christian Brintnall">
-	<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
-	<script type="text/javascript" src="{% static 'semantic/semantic.min.js' %}"></script>
-	<link rel="stylesheet" type="text/css" href="{% static 'css/shift_upload.css' %}" />
-	<script src="{% static 'js/upload.js' %}"></script>
-	<link rel="stylesheet" type="text/css" href="{% static 'semantic/semantic.min.css' %}" />
+{% block title %}
+Shift Upload
+{% endblock %}
 
-	<script>
-		var sendFile = false;
+{% block link %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/shift_upload.css' %}" />
+<script src="{% static 'js/upload.js' %}"></script>
+<script>
+	var sendFile = false;
 
-		function confirmFile() {
-			if (sendFile)
-				return sendFile;
+	function confirmFile() {
+		if (sendFile)
+			return sendFile;
 
-			$('.ui.modal')
-				.modal({
-					closable: false,
-					onDeny: function() {
-					},	
-					onApprove: function() {
-						sendFile = true;
-						$(this).modal('hide');
-						$('#upload form input[type=submit]').click();
-					}
-				})
-				.modal('show');
+		$('.ui.modal')
+			.modal({
+				closable: false,
+				onDeny: function() {
+				},	
+				onApprove: function() {
+					sendFile = true;
+					$(this).modal('hide');
+					$('#upload form input[type=submit]').click();
+				}
+			})
+			.modal('show');
 
-			return false;
-		}
-	</script>
-</head>
+		return false;
+	}
+</script>
+{% endblock%}
 
-<body>
-	<div class="ui modal">
-  		<div class="header">Confirm</div>
-  		<div class='content'>
+{% block content %}
+<div class="ui modal">
+		<div class="header">Confirm</div>
+			<div class='content'>
   			<h3> Are you <em>sure</em> you want to do this? </h3>
   			<p> Doing this removes all the currently uploaded shifts and rescrapes what you upload. </p>
   			<p> You will be able to still download the old sheet, but this data may be relied on. </p>
-  		</div>
-  		<div class="actions">
-		    <div class="ui green approve button">Delete and Upload</div>
-			<div class="ui red cancel button">Cancel</div>
+			</div>
+		<div class="actions">
+	    <div class="ui green approve button">
+	    	Delete and Upload
 	    </div>
-	</div>
-	<div class="ui middle aligned center aligned grid">
-		<div class='row'>
-			<div class='column'>
-				<div class='ui attached message' style='margin-top: 32px;'>
-					<p><a href='/'><button class='ui blue button'>Home</button></a></p>
-    				<p>Start date should be the first day of a term, last date should be the final day.</p>
-    			</div>
-				<div class='ui attached compact segment'>
-					<form action='.' method='POST' enctype="multipart/form-data" onsubmit="return confirmFile();" class='ui form'>
-				    	{% csrf_token %}
-				        {{ form.as_p }}
-		        		<input type="submit" value="Upload" class='ui positive fluid button'/>
-	    			</form>
-				</div>
-				<table class='ui five column attached striped celled table'>
-					<thead>
+		<div class="ui red cancel button">
+			Cancel
+		</div>
+    </div>
+</div>
+<div class="ui middle aligned center aligned grid">
+	<div class='row'>
+		<div class='column'>
+			<div class='ui attached message' style='margin-top: 32px;'>
+				<p>Start date should be the first day of a term, last date should be the final day.</p>
+			</div>
+			<div class='ui attached compact segment'>
+				<form action='.' method='POST' enctype="multipart/form-data" onsubmit="return confirmFile();" class='ui form'>
+			    	{% csrf_token %}
+			        {{ form.as_p }}
+	        		<input type="submit" value="Upload" class='ui positive fluid button'/>
+    			</form>
+			</div>
+			<table class='ui five column attached striped celled table'>
+				<thead>
+					<tr>
+						<th> Start Date </th>
+						<th> End Date </th>
+						<th> Uploader </th>
+						<th> Upload Date </th>
+						<th> Download </th>
+						{% if request.user.is_superuser %}
+							<th> 
+							    Delete
+							</th>
+				    	{% endif %}
+					</tr>
+				</thead>
+				<tbody>
+					{% for sheet in sheets %}
 						<tr>
-							<th> Start Date </th>
-							<th> End Date </th>
-							<th> Uploader </th>
-							<th> Upload Date </th>
-							<th> Download </th>
+							<td> {{ sheet.first_date }} </td>
+							<td> {{ sheet.last_date }} </td>
+							<td> {{ sheet.user.username }} -> {{ sheet.user.first_name }} {{ sheet.user.last_name }} </td>
+							<td> {{ sheet.created_at }} </td>
+							<td> 
+							    <a href="{{ sheet.sheet.url }}" download><button class="ui fluid blue button">Download</button></a>
+							</td>
 							{% if request.user.is_superuser %}
-								<th> 
-								    Delete
-								</th>
+								<td> 
+								    <a href="/shifts/remove/{{ sheet.pk }}/" ><button class="ui inverted red button">Delete</button></a>
+								</td>
 					    	{% endif %}
 						</tr>
-					</thead>
-					<tbody>
-						{% for sheet in sheets %}
-							<tr>
-								<td> {{ sheet.first_date }} </td>
-								<td> {{ sheet.last_date }} </td>
-								<td> {{ sheet.user.username }} -> {{ sheet.user.first_name }} {{ sheet.user.last_name }} </td>
-								<td> {{ sheet.created_at }} </td>
-								<td> 
-								    <a href="{{ sheet.sheet.url }}" download><button class="ui fluid blue button">Download</button></a>
-								</td>
-								{% if request.user.is_superuser %}
-									<td> 
-									    <a href="/shifts/remove/{{ sheet.pk }}/" ><button class="ui inverted red button">Delete</button></a>
-									</td>
-						    	{% endif %}
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
+					{% endfor %}
+				</tbody>
+			</table>
 		</div>
 	</div>
-</body>
-</html>
+</div>
+{% endblock %}
