@@ -15,14 +15,6 @@
 	<script>
 		var sendFile = false;
 
-		/* 
-			The fact that this works disgusts me.
-
-			First time running it, it enables the modal.
-			Once the user clicks approve that flips sendFile to true.
-			ON an approval, a fake click is sent to the form, causing
-			this to run again and return true since the global is true.
-		*/
 		function confirmFile() {
 			if (sendFile)
 				return sendFile;
@@ -50,14 +42,66 @@
   		<div class="header">Confirm</div>
   		<div class='content'>
   			<h3> Are you <em>sure</em> you want to do this? </h3>
-  			<h4> Doing this removes all the currently uploaded shifts and rescrapes what you upload. </h4>
+  			<p> Doing this removes all the currently uploaded shifts and rescrapes what you upload. </p>
+  			<p> You will be able to still download the old sheet, but this data may be relied on. </p>
   		</div>
   		<div class="actions">
 		    <div class="ui green approve button">Delete and Upload</div>
 			<div class="ui red cancel button">Cancel</div>
 	    </div>
 	</div>
-	<div id='holder'>
+	<div class="ui middle aligned center aligned grid">
+		<div class='row'>
+			<div class='column'>
+				<div class='ui attached message' style='margin-top: 32px;'>
+					<p><a href='/'><button class='ui blue button'>Home</button></a></p>
+    				<p>Start date should be the first day of a term, last date should be the final day.</p>
+    			</div>
+				<div class='ui attached compact segment'>
+					<form action='.' method='POST' enctype="multipart/form-data" onsubmit="return confirmFile();" class='ui form'>
+				    	{% csrf_token %}
+				        {{ form.as_p }}
+		        		<input type="submit" value="Upload" class='ui positive fluid button'/>
+	    			</form>
+				</div>
+				<table class='ui five column attached striped celled table'>
+					<thead>
+						<tr>
+							<th> Start Date </th>
+							<th> End Date </th>
+							<th> Uploader </th>
+							<th> Upload Date </th>
+							<th> Download </th>
+							{% if request.user.is_superuser %}
+								<th> 
+								    Delete
+								</th>
+					    	{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+						{% for sheet in sheets %}
+							<tr>
+								<td> {{ sheet.first_date }} </td>
+								<td> {{ sheet.last_date }} </td>
+								<td> {{ sheet.user.username }} -> {{ sheet.user.first_name }} {{ sheet.user.last_name }} </td>
+								<td> {{ sheet.created_at }} </td>
+								<td> 
+								    <a href="{{ sheet.sheet.url }}" download><button class="ui fluid blue button">Download</button></a>
+								</td>
+								{% if request.user.is_superuser %}
+									<td> 
+									    <a href="/shifts/remove/{{ sheet.pk }}/" ><button class="ui inverted red button">Delete</button></a>
+									</td>
+						    	{% endif %}
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- <div id='holder'>
 		<div class="ui inverted menu">
 		  <a class="browse item active visible">
 		    Browse
@@ -66,20 +110,6 @@
 		</div>
 		<a href='/'> Home </a>
 		<div id='downloads'>
-			{% for sheet in sheets %}
-				<div class="ui card">
-				  <div class="content">
-				    <div class="header">{{ sheet.created_at }}</div>
-				    <p> Uploaded by: {{ sheet.user.username }} </p>
-				  </div>
-				  <div class="extra content">
-				    <a href="{{ sheet.sheet.url }}" download><button class="ui button">Download</button></a>
-				    {% if request.user.is_superuser %}
-				    	<a href="/shifts/remove/{{ sheet.pk }}/" ><button class="ui inverted red button">Delete</button></a>
-				    {% endif %}
-				  </div>
-				</div>
-			{% endfor %}
 		</div>
 		<div id='upload'>
 			<form action='.' method='POST' enctype="multipart/form-data" onsubmit="return confirmFile();">
@@ -94,6 +124,6 @@
 			<h1 style="color: red;"> You are missing a sheet name - Add it <a href='/user/profile/'> here </a> to claim shifts.</h1>
 		{% endif %}
  		<a href='/shifts/claim/'><button>Claim Shifts</button></a>
-	</div>
+	</div>-->
 </body>
 </html>

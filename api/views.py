@@ -112,11 +112,8 @@ def get_shifts(request):
 		user_set = Shift.objects.filter(user__username=username)
 		shifts &= user_set
 
-	if len(shifts) == 0:
-		return JsonResponse({
-			{}
-		})
 
+	context['success'] = []
 	context['success'] = [{
 		'datetime' : datetime.strptime("{} {}".format(shift.date, shift.start), '%Y-%m-%d %H:%M:%S'),
 		'name': "{} {}".format(shift.user.first_name, shift.user.last_name),
