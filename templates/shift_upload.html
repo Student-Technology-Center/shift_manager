@@ -30,6 +30,7 @@ Shift Upload
 
 		return false;
 	}
+
 </script>
 {% endblock%}
 
@@ -50,54 +51,52 @@ Shift Upload
 		</div>
     </div>
 </div>
-<div class="ui middle aligned center aligned grid">
-	<div class='row'>
-		<div class='column'>
-			<div class='ui attached message' style='margin-top: 32px;'>
-				<p>Start date should be the first day of a term, last date should be the final day.</p>
-			</div>
-			<div class='ui attached compact segment'>
-				<form action='.' method='POST' enctype="multipart/form-data" onsubmit="return confirmFile();" class='ui form'>
-			    	{% csrf_token %}
-			        {{ form.as_p }}
-	        		<input type="submit" value="Upload" class='ui positive fluid button'/>
-    			</form>
-			</div>
-			<table class='ui five column attached striped celled table'>
-				<thead>
+<div class='centered row'>
+	<div class='center aligned column' style='width: 35%;'>
+		<div class='ui attached message' style='margin-top: 32px;'>
+			<p>Start date should be the first day of a term, last date should be the final day.</p>
+		</div>
+		<div class='ui attached compact segment'>
+			<form action='.' method='POST' enctype="multipart/form-data" onsubmit="return confirmFile();" class='ui form'>
+		    	{% csrf_token %}
+		        {{ form.as_p }}
+        		<input type="submit" value="Upload" class='ui positive fluid button'/>
+			</form>
+		</div>
+		<table class='ui five column attached striped celled table'>
+			<thead>
+				<tr>
+					<th> Start Date </th>
+					<th> End Date </th>
+					<th> Uploader </th>
+					<th> Upload Date </th>
+					<th> Download </th>
+					{% if request.user.is_superuser %}
+						<th> 
+						    Delete
+						</th>
+			    	{% endif %}
+				</tr>
+			</thead>
+			<tbody>
+				{% for sheet in sheets %}
 					<tr>
-						<th> Start Date </th>
-						<th> End Date </th>
-						<th> Uploader </th>
-						<th> Upload Date </th>
-						<th> Download </th>
+						<td> {{ sheet.first_date }} </td>
+						<td> {{ sheet.last_date }} </td>
+						<td> {{ sheet.user.username }} -> {{ sheet.user.first_name }} {{ sheet.user.last_name }} </td>
+						<td> {{ sheet.created_at }} </td>
+						<td> 
+						    <a href="{{ sheet.sheet.url }}" download><button class="ui fluid blue button">Download</button></a>
+						</td>
 						{% if request.user.is_superuser %}
-							<th> 
-							    Delete
-							</th>
+							<td> 
+							    <a href="/shifts/remove/{{ sheet.pk }}/" ><button class="ui inverted red button">Delete</button></a>
+							</td>
 				    	{% endif %}
 					</tr>
-				</thead>
-				<tbody>
-					{% for sheet in sheets %}
-						<tr>
-							<td> {{ sheet.first_date }} </td>
-							<td> {{ sheet.last_date }} </td>
-							<td> {{ sheet.user.username }} -> {{ sheet.user.first_name }} {{ sheet.user.last_name }} </td>
-							<td> {{ sheet.created_at }} </td>
-							<td> 
-							    <a href="{{ sheet.sheet.url }}" download><button class="ui fluid blue button">Download</button></a>
-							</td>
-							{% if request.user.is_superuser %}
-								<td> 
-								    <a href="/shifts/remove/{{ sheet.pk }}/" ><button class="ui inverted red button">Delete</button></a>
-								</td>
-					    	{% endif %}
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
-		</div>
+				{% endfor %}
+			</tbody>
+		</table>
 	</div>
 </div>
 {% endblock %}
