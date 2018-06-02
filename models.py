@@ -5,23 +5,6 @@ from django.utils import timezone
 
 import django
 
-class ShiftHelper(models.Model):
-	owner 				= models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+', null=True)
-	current_user 		= models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-	current_place 		= models.IntegerField(default=0)
-	max_place 			= models.IntegerField(default=0)
-	start_date 			= models.DateField(default=django.utils.timezone.now)
-	end_date 			= models.DateField(default=django.utils.timezone.now)
-	current_round 		= models.IntegerField(default=0)
-	total_rounds 		= models.IntegerField(default=3)
-	going_up 			= models.BooleanField(default=True)
-	shifts_per_turn 	= models.IntegerField(default=4)
-
-class ShiftPlacement(models.Model):
-	place 		= models.IntegerField(default=0)
-	amt_left 	= models.IntegerField(default=4)
-	user 		= models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
 class Shift(models.Model):
 	DOW = (
 		('Mon', 'Monday'),
