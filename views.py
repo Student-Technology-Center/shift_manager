@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -6,21 +7,13 @@ from django.db import IntegrityError
 from shiftmanager.models import ShiftFile, Shift
 from utils.message import send_stc_email
 from login.models import UserOptions
+from login.decorators import user_is_email_confirmed
 
 from .forms import ShiftExcelUpload
 from .helpers import claim_shifts
 
-import random
-
-'''
-    This view exists as a solution to
-    get the shifts onto our website.
-    I never finished Shift Manager, but
-    I have left my code in-case you are
-    brave enough to finish it. For now,
-    you simply upload an excel document
-    in David's format and it'll scrape it for the shifts.
-'''
+@login_required
+@user_is_email_confirmed
 def file_upload(request):
     if request.POST:
         form = ShiftExcelUpload(request.POST, request.FILES)
@@ -33,7 +26,8 @@ def file_upload(request):
 
     context = { 
         "form"  : form, 
-        "sheets": ShiftFile.objects.all()
+        "sheets": ShiftFile.objects.all(),
+        "count" : Shift.objects.filter(user=request.user).count()
     }
 
     return render(

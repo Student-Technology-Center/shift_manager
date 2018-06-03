@@ -5,7 +5,7 @@
 Shift Upload
 {% endblock %}
 
-{% block link %}
+{% block links %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/shift_upload.css' %}" />
 <script src="{% static 'js/upload.js' %}"></script>
 <script>
@@ -54,7 +54,8 @@ Shift Upload
 <div class='centered row'>
 	<div class='center aligned column' style='width: 35%;'>
 		<div class='ui attached message' style='margin-top: 32px;'>
-			<button class='ui blue button'>Claim Shifts</button>
+			<a href='/shifts/claim/'><button class='ui blue button'>Claim Shifts</button></a>
+			<p> You have <span style='blue'>{{ count }}</span> shifts </p>
 		</div>
 		<div class='ui attached compact segment'>
 			<form action='.' method='POST' enctype="multipart/form-data" onsubmit="return confirmFile();" class='ui form'>

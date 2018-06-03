@@ -5,7 +5,8 @@ import shiftmanager.views as shift_views
 urlpatterns = [
     url(r'^$', shift_views.file_upload, name='index'),
     url(r'^remove/(?P<pk>\d+)/$', shift_views.remove, name='remove'),
-    url(r'^upload/$', shift_views.file_upload, name='upload')
+    url(r'^upload/$', shift_views.file_upload, name='upload'),
+    url(r'^claim/$', shift_views.assign_shifts, name='claim')
 ]
 
 #Commented out for now, since it's not needed.

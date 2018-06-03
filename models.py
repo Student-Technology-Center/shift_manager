@@ -27,7 +27,4 @@ class ShiftFile(models.Model):
 	created_at 	= models.DateTimeField(auto_now_add=True)
 	first_date 	= models.DateField(null=False, default=django.utils.timezone.now)
 	last_date 	= models.DateField(null=False, default=django.utils.timezone.now)
-	sheet 		= models.FileField(upload_to='media/sheets/%Y-%m-%d/')
-
-	def filename(self):
-	    return os.path.basename(self.sheet.name)
+	sheet 		= models.FileField(upload_to='sheets/%Y-%m-%d')

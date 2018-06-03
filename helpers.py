@@ -1,9 +1,12 @@
+from django.contrib.auth import get_user_model
+
 import os
 import pandas as pd
-
-from django.contrib.auth import get_user_model
 from datetime import datetime, time, timedelta
+
 from login.models import UserOptions
+from utils.message import send_stc_email
+
 from . models import Shift
 
 USER_MODEL = get_user_model()
@@ -85,7 +88,7 @@ def claim_shifts(request=None):
 
         #Get the name as it appears on the excel sheet.
         sheet_name = shift.sheet_user
-            
+
         try:
             matching_user = UserOptions.objects.get(shift_name=sheet_name.lower()).user
             shift.user = matching_user
